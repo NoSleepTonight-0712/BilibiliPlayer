@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".PlayerActivity">
+
+    <ImageView
+        android:id="@+id/image_cover"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_gravity="center"
+        android:layout_margin="32dp"
+        android:layout_weight="8"
+        android:contentDescription="@string/cover_page" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp"
+        android:layout_weight="3"
+        android:orientation="vertical">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="5">
+
+            <ImageButton
+                android:id="@+id/play_button"
+                android:layout_width="65dp"
+                android:layout_height="65dp"
+                android:layout_centerInParent="true"
+                android:layout_marginStart="32dp"
+                android:layout_marginTop="32dp"
+                android:layout_marginEnd="32dp"
+                android:layout_marginBottom="32dp"
+                android:background="@null"
+                android:scaleType="centerInside"
+                android:src="@drawable/ic_play" />
+
+            <ImageButton
+                android:id="@+id/backward_button"
+                android:layout_width="45dp"
+                android:layout_height="45dp"
+                android:layout_toStartOf="@id/play_button"
+                android:layout_centerVertical="true"
+                android:background="@null"
+                android:src="@drawable/ic_backward"
+                android:scaleType="centerInside"/>
+
+            <ImageButton
+                android:layout_width="45dp"
+                android:layout_height="45dp"
+                android:id="@+id/forward_button"
+                android:layout_toEndOf="@id/play_button"
+                android:layout_centerVertical="true"
+                android:background="@null"
+                android:src="@drawable/ic_forward"
+                android:scaleType="centerInside"/>
+
+
+
+        </RelativeLayout>
+
+        <ProgressBar
+            style="?android:attr/progressBarStyleHorizontal"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="2" />
+
+    </LinearLayout>
+</LinearLayout>
