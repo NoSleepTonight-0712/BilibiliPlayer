@@ -7,12 +7,14 @@
         android:layout_height="120dp"
         android:layout_gravity="center_horizontal|top"
         android:layout_margin="32dp"
-        android:contentDescription="@string/face" />
+        android:contentDescription="@string/face"
+        android:id="@+id/menu_face_image"/>
     <TextView
-        android:id="@+id/name_box"
+        android:id="@+id/menu_name_box"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/no_login"
+        android:layout_marginBottom="8dp"
         android:layout_gravity="center_horizontal"
         android:textSize="18sp"/>
     <LinearLayout
@@ -20,7 +22,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
         android:orientation="horizontal"
-        android:id="@+id/uid_layout"
+        android:id="@+id/menu_uid_layout"
         android:visibility="invisible">
         <TextView
             android:layout_width="wrap_content"
@@ -32,6 +34,6 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="16sp"
-            android:id="@+id/uid_box"/>
+            android:id="@+id/menu_uid_textbox"/>
     </LinearLayout>
 </LinearLayout>

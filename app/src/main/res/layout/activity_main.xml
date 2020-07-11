@@ -7,7 +7,8 @@
     tools:context=".MainActivity"
     android:id="@+id/drawer_layout">
 
-    <FrameLayout
+    <LinearLayout
+        android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
         <androidx.appcompat.widget.Toolbar
@@ -17,13 +18,13 @@
             android:background="?attr/colorPrimary"
             android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
             app:popupTheme="@style/ThemeOverlay.AppCompat.Light"/>
-
-        <include layout="@layout/activity_player"
+        <FrameLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:id="@+id/content_layout"/>
-
-    </FrameLayout>
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:id="@+id/content_layout">
+        </FrameLayout>
+    </LinearLayout>
 
     <com.google.android.material.navigation.NavigationView
         android:layout_width="match_parent"
