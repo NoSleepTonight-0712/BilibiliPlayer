@@ -9,23 +9,17 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
-import androidx.navigation.NavController;
-import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
-import androidx.navigation.ui.NavigationUI;
 
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
 import android.view.MenuItem;
-import android.widget.FrameLayout;
 
 import static com.github.zhixinghey0712.bilibiliplayer.util.GlobalVariables.TAG;
-import static com.github.zhixinghey0712.bilibiliplayer.util.FragmentUniqueTag.*;
 
 import com.github.zhixinghey0712.bilibiliplayer.ui.PlayerFragment;
 import com.github.zhixinghey0712.bilibiliplayer.ui.UserFragment;
-import com.github.zhixinghey0712.bilibiliplayer.util.FragmentUniqueTag;
 import com.google.android.material.navigation.NavigationView;
 
 import okhttp3.OkHttpClient;
@@ -35,6 +29,8 @@ public class MainActivity extends AppCompatActivity {
     private final OkHttpClient client = new OkHttpClient();
     public Handler uiHandler = new Handler();
     private AppBarConfiguration mAppBarConfiguration;
+
+    private static boolean firstFragmentAdded = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,12 +46,13 @@ public class MainActivity extends AppCompatActivity {
             actionBar.setHomeAsUpIndicator(R.drawable.ic_menu);
         }
 
-        replaceFragment(new PlayerFragment(), PLAYER, false);
+        replaceFragment(new PlayerFragment());
         initDrawerMenu();
     }
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        // 用于处理标题栏按钮
         switch (item.getItemId()) {
             case android.R.id.home:
                 mDrawerLayout.openDrawer(GravityCompat.START);
@@ -76,11 +73,15 @@ public class MainActivity extends AppCompatActivity {
         navView.setNavigationItemSelectedListener((MenuItem item) -> {
             switch (item.getItemId()) {
                 case R.id.menu_player:
-                    replaceFragment(new PlayerFragment(), PLAYER);
+                    replaceFragment(new PlayerFragment());
+                    mDrawerLayout.close();
                     break;
                 case R.id.menu_user:
-                    replaceFragment(new UserFragment(), USER);
+                    replaceFragment(new UserFragment());
+                    mDrawerLayout.close();
                     break;
+                case R.id.menu_playlist:
+
                 default:
             }
             return true;
@@ -89,36 +90,13 @@ public class MainActivity extends AppCompatActivity {
 
     /**
      * 切换页面并模拟返回栈singleTask
-     * @param fragment fragment实例
-     * @param fragmentTagEnum fragment对应的tag, 在{@link FragmentUniqueTag}中
-     * @param isAddToBackStack 是否添加进返回栈
+     *
+     * @param fragment         fragment实例
      */
-    private void replaceFragment(Fragment fragment, FragmentUniqueTag fragmentTagEnum,
-                                 boolean isAddToBackStack) {
+    private void replaceFragment(Fragment fragment) {
         FragmentManager manager = getSupportFragmentManager();
-        String fragmentTag = fragmentTagEnum.name();
-
-        if (manager.findFragmentByTag(fragmentTag) == null) {
-            // 返回栈中没有这个Fragment
-            FragmentTransaction transaction = manager.beginTransaction();
-            transaction.replace(R.id.content_layout, fragment, fragmentTag);
-            if (isAddToBackStack) {
-                transaction.addToBackStack(null);
-            }
-            transaction.commit();
-        } else {
-            // 有，弹栈
-            manager.popBackStack(fragmentTag, 0);
-        }
-    }
-
-    /**
-     * 切换页面并模拟返回栈singleTask
-     * 一定添加进返回栈
-     * @param fragment fragment实例
-     * @param fragmentTagEnum fragment对应的tag, 在{@link FragmentUniqueTag}
-     */
-    private void replaceFragment(Fragment fragment, FragmentUniqueTag fragmentTagEnum) {
-        replaceFragment(fragment, fragmentTagEnum, true);
+        FragmentTransaction transaction = manager.beginTransaction();
+        transaction.replace(R.id.content_layout, fragment);
+        transaction.commit();
     }
 }
