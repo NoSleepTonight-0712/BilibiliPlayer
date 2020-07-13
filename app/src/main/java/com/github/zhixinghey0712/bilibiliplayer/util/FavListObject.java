@@ -1,17 +1,17 @@
 package com.github.zhixinghey0712.bilibiliplayer.util;
 
+import com.github.zhixinghey0712.bilibiliplayer.util.json.favlist.FavList;
+
 public class FavListObject {
     private String ListName;
     private String fid;
 
-    public FavListObject(com.github.zhixinghey0712.bilibiliplayer.util.json.favlist.FavList json) {
-        this.ListName = json.getTitle();
-        this.fid = String.valueOf(json.getFid());
-    }
+    private int total;
 
-    public FavListObject(String name, String fid) {
-        ListName = name;
-        this.fid = fid;
+    public FavListObject(FavList json) {
+        this.ListName = json.getTitle();
+        this.fid = String.valueOf(json.getId());
+        this.total = json.getMedia_count();
     }
 
     public String getListName() {
@@ -20,5 +20,9 @@ public class FavListObject {
 
     public String getFid() {
         return fid;
+    }
+
+    public int getTotal() {
+        return total;
     }
 }

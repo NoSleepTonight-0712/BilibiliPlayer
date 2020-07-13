@@ -124,6 +124,7 @@ public class PlaylistFragment extends Fragment {
         @Override
         public void run() {
             FavListJsonBean json = LocalInfoManager.getFavList(UserSettings.getUid(), mode);
+            if (json == null) return;
             favListObjects.clear();
             for (FavList favList : json.getData().getList()) {
                 favListObjects.add(new FavListObject(favList));

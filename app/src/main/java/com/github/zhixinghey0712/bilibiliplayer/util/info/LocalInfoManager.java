@@ -9,6 +9,7 @@ import com.github.zhixinghey0712.bilibiliplayer.ApplicationMain;
 import com.github.zhixinghey0712.bilibiliplayer.util.GlobalVariables;
 import com.github.zhixinghey0712.bilibiliplayer.util.UpdateMode;
 import com.github.zhixinghey0712.bilibiliplayer.util.json.favlist.FavListJsonBean;
+import com.github.zhixinghey0712.bilibiliplayer.util.json.favlistContent.FavlistContentJsonBean;
 import com.github.zhixinghey0712.bilibiliplayer.util.json.user.UserInfoJsonBean;
 
 import java.io.BufferedReader;
@@ -68,6 +69,19 @@ public class LocalInfoManager {
             e.printStackTrace();
             return null;
         }
+    }
+
+    public static FavlistContentJsonBean getFavListContent(String fid, int total, UpdateMode mode) {
+        String fileName = GlobalVariables.FavListIndexFileName(fid);
+        if (mode == UpdateMode.ONLINE || !isFileExists(fileName)) {
+            Log.i(GlobalVariables.TAG, "联网获取收藏夹内容");
+            Network.getFavListContent(fid, total);
+        }
+        FavlistContentJsonBean json = readJson(fileName, FavlistContentJsonBean.class);
+        if (json == null) {
+            Log.e(GlobalVariables.TAG, "获取收藏夹失败");
+        }
+        return json;
     }
 
     private static <T> T readJson(String fileName, Class<T> clazz) {

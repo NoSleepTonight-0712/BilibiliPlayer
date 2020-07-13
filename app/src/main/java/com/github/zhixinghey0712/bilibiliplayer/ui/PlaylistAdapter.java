@@ -47,9 +47,11 @@ public class PlaylistAdapter extends RecyclerView.Adapter<PlaylistAdapter.ViewHo
             int position = holder.getLayoutPosition();
             FavListObject favList = favListObjects.get(position);
 
-            // TODO 点击事件
             Intent intent = new Intent(playListActivity, FavListContentActivity.class);
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            intent.putExtra("fid", favList.getFid());
+            intent.putExtra("name", favList.getListName());
+            intent.putExtra("total", favList.getTotal());
             ApplicationMain.getContext().startActivity(intent);
         });
 
