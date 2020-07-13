@@ -20,6 +20,7 @@ import android.widget.TextView;
 import com.github.zhixinghey0712.bilibiliplayer.R;
 import com.github.zhixinghey0712.bilibiliplayer.util.GlobalVariables;
 import com.github.zhixinghey0712.bilibiliplayer.util.UpdateMode;
+import com.github.zhixinghey0712.bilibiliplayer.util.UserSettings;
 import com.github.zhixinghey0712.bilibiliplayer.util.info.LocalInfoManager;
 import com.github.zhixinghey0712.bilibiliplayer.util.info.Network;
 import com.github.zhixinghey0712.bilibiliplayer.util.json.favlist.FavListJsonBean;
@@ -110,6 +111,9 @@ public class UserFragment extends Fragment {
                 faceView.setImageBitmap(face);
                 nameText.setText((CharSequence) name);
                 uidText.setText((CharSequence) Uid);
+
+                UserSettings.setUid(Uid);
+                UserSettings.setName(name);
             });
         }
 

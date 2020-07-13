@@ -21,6 +21,12 @@ import java.util.Objects;
 
 public class LocalInfoManager {
 
+    /**
+     * 获取个人收藏夹
+     * @param uid uid
+     * @param mode 更新模式
+     * @return json的实体类
+     */
     public static FavListJsonBean getFavList(String uid, UpdateMode mode) {
         if (mode == UpdateMode.ONLINE || !isFileExists(GlobalVariables.FAVLIST_INDEX_FILE_NAME)) {
             Log.i(GlobalVariables.TAG, "联网获取FavList");

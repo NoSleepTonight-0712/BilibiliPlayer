@@ -29,6 +29,7 @@ import com.github.zhixinghey0712.bilibiliplayer.ui.SettingsFragment;
 import com.github.zhixinghey0712.bilibiliplayer.ui.UserFragment;
 import com.github.zhixinghey0712.bilibiliplayer.util.GlobalVariables;
 import com.github.zhixinghey0712.bilibiliplayer.util.UpdateMode;
+import com.github.zhixinghey0712.bilibiliplayer.util.UserSettings;
 import com.github.zhixinghey0712.bilibiliplayer.util.info.LocalInfoManager;
 import com.github.zhixinghey0712.bilibiliplayer.util.json.user.UserInfoJsonBean;
 import com.google.android.material.navigation.NavigationView;
@@ -118,10 +119,18 @@ public class MainActivity extends AppCompatActivity {
 
         if (!LocalInfoManager.isFileExists(GlobalVariables.USER_FACE_FILE_NAME)) return;
         if (!LocalInfoManager.isFileExists(GlobalVariables.USER_INFO_FILE_NAME)) return;
+
         try {
-            UserInfoJsonBean info = LocalInfoManager.getUserInfo();
-            String uid = String.valueOf(info.getData().getMid());
-            String name = info.getData().getName();
+            String uid = UserSettings.getUid();
+            String name = UserSettings.getName();
+
+            if (uid.equals("-1") || name.equals("")) {
+                // usersettings中没有
+                UserInfoJsonBean info = LocalInfoManager.getUserInfo();
+                uid = String.valueOf(info.getData().getMid());
+                name = info.getData().getName();
+            }
+
             Bitmap faceImage = BitmapFactory.decodeStream
                     (ApplicationMain.getContext().openFileInput(GlobalVariables.USER_FACE_FILE_NAME));
 

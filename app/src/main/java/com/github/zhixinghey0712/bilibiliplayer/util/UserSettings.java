@@ -12,7 +12,7 @@ public class UserSettings {
             pref.edit();
 
     public static String getUid() {
-        return pref.getString("uid", "000");
+        return pref.getString("uid", "-1");
     }
 
     public static void setUid(String uid) {
@@ -51,5 +51,18 @@ public class UserSettings {
                 break;
         }
         editor.apply();
+    }
+
+    public static void setName(String name) {
+        editor.putString("name", name);
+        editor.apply();
+    }
+
+    public static String getName() {
+        return pref.getString("name", "");
+    }
+
+    public static boolean isLogin() {
+        return !getUid().equals("-1");
     }
 }

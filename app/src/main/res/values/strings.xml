@@ -37,4 +37,5 @@
     <string name="t_network_fail">网络错误，请检查网络连接</string>
     <string name="t_get_favlist_success">成功获取收藏夹</string>
     <string name="t_get_userinfo_success">成功获取用户信息</string>
+    <string name="t_please_login">请先登录</string>
 </resources>
