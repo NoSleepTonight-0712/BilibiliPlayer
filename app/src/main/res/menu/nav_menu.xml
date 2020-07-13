@@ -3,7 +3,7 @@
     <group android:checkableBehavior="single">
         <item android:id="@+id/menu_player"
             android:icon="@drawable/ic_play"
-            android:title="@string/listen"/>
+            android:title="@string/player"/>
         <item android:id="@+id/menu_playlist"
             android:icon="@drawable/ic_playlist"
             android:title="@string/playlist"/>

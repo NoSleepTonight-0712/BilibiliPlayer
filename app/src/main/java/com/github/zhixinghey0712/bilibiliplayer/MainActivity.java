@@ -9,18 +9,32 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
-import androidx.navigation.ui.AppBarConfiguration;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import static com.github.zhixinghey0712.bilibiliplayer.util.GlobalVariables.TAG;
 
 import com.github.zhixinghey0712.bilibiliplayer.ui.PlayerFragment;
+import com.github.zhixinghey0712.bilibiliplayer.ui.PlaylistFragment;
+import com.github.zhixinghey0712.bilibiliplayer.ui.SettingsFragment;
 import com.github.zhixinghey0712.bilibiliplayer.ui.UserFragment;
+import com.github.zhixinghey0712.bilibiliplayer.util.GlobalVariables;
+import com.github.zhixinghey0712.bilibiliplayer.util.UpdateMode;
+import com.github.zhixinghey0712.bilibiliplayer.util.info.LocalInfoManager;
+import com.github.zhixinghey0712.bilibiliplayer.util.json.user.UserInfoJsonBean;
 import com.google.android.material.navigation.NavigationView;
+
+import java.io.FileNotFoundException;
+import java.util.Objects;
 
 import okhttp3.OkHttpClient;
 
@@ -28,9 +42,7 @@ public class MainActivity extends AppCompatActivity {
     private DrawerLayout mDrawerLayout;
     private final OkHttpClient client = new OkHttpClient();
     public Handler uiHandler = new Handler();
-    private AppBarConfiguration mAppBarConfiguration;
-
-    private static boolean firstFragmentAdded = false;
+    private ActionBar actionBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,8 +52,9 @@ public class MainActivity extends AppCompatActivity {
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        ActionBar actionBar = getSupportActionBar();
+        actionBar = getSupportActionBar();
         if (actionBar != null) {
+            actionBar.setTitle(R.string.player);
             actionBar.setDisplayHomeAsUpEnabled(true);
             actionBar.setHomeAsUpIndicator(R.drawable.ic_menu);
         }
@@ -55,6 +68,7 @@ public class MainActivity extends AppCompatActivity {
         // 用于处理标题栏按钮
         switch (item.getItemId()) {
             case android.R.id.home:
+                updateUI();
                 mDrawerLayout.openDrawer(GravityCompat.START);
                 break;
             default:
@@ -69,34 +83,73 @@ public class MainActivity extends AppCompatActivity {
         Log.i(TAG, "Start init Drawer Menu");
         NavigationView navView = findViewById(R.id.navigation_view);
         navView.setCheckedItem(R.id.menu_player);
-
         navView.setNavigationItemSelectedListener((MenuItem item) -> {
             switch (item.getItemId()) {
                 case R.id.menu_player:
+                    actionBar.setTitle(R.string.player);
                     replaceFragment(new PlayerFragment());
-                    mDrawerLayout.close();
                     break;
                 case R.id.menu_user:
+                    actionBar.setTitle(R.string.user);
                     replaceFragment(new UserFragment());
-                    mDrawerLayout.close();
                     break;
                 case R.id.menu_playlist:
-
+                    actionBar.setTitle(R.string.playlist);
+                    replaceFragment(new PlaylistFragment());
+                    break;
+                case R.id.menu_settings:
+                    actionBar.setTitle(R.string.settings);
+                    replaceFragment(new SettingsFragment());
+                    break;
                 default:
             }
+            mDrawerLayout.close();
             return true;
         });
+    }
+
+    private void updateUI() {
+        // 本地更新
+        // 如果本地文件有缺失就停止
+        TextView menuUidTextBox = findViewById(R.id.menu_uid_textbox);
+        TextView menuNameBox = findViewById(R.id.menu_name_box);
+        LinearLayout menuUidLayout = findViewById(R.id.menu_uid_layout);
+        ImageView menuFace = findViewById(R.id.menu_face_image);
+
+        if (!LocalInfoManager.isFileExists(GlobalVariables.USER_FACE_FILE_NAME)) return;
+        if (!LocalInfoManager.isFileExists(GlobalVariables.USER_INFO_FILE_NAME)) return;
+        try {
+            UserInfoJsonBean info = LocalInfoManager.getUserInfo();
+            String uid = String.valueOf(info.getData().getMid());
+            String name = info.getData().getName();
+            Bitmap faceImage = BitmapFactory.decodeStream
+                    (ApplicationMain.getContext().openFileInput(GlobalVariables.USER_FACE_FILE_NAME));
+
+            menuUidTextBox.setText(uid);
+            menuFace.setImageBitmap(faceImage);
+            menuUidLayout.setVisibility(View.VISIBLE);
+            menuNameBox.setText(name);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
     }
 
     /**
      * 切换页面并模拟返回栈singleTask
      *
-     * @param fragment         fragment实例
+     * @param fragment fragment实例
      */
     private void replaceFragment(Fragment fragment) {
         FragmentManager manager = getSupportFragmentManager();
         FragmentTransaction transaction = manager.beginTransaction();
         transaction.replace(R.id.content_layout, fragment);
         transaction.commit();
+    }
+
+    public void setToolbarTitle(int stringId) {
+        ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null) {
+            actionBar.setTitle(stringId);
+        }
     }
 }

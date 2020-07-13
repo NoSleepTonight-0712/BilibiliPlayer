@@ -7,7 +7,19 @@
     android:orientation="vertical"
     tools:context=".ui.PlayerFragment"
     android:id="@+id/fragment_player">
-
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="64sp"
+        android:layout_marginTop="32dp"
+        android:layout_marginHorizontal="32dp"
+        android:id="@+id/player_music_name"/>
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="32sp"
+        android:layout_marginTop="8dp"
+        android:layout_marginHorizontal="48dp"
+        android:textColor="@color/grey"
+        android:id="@+id/player_singer"/>
     <ImageView
         android:id="@+id/image_cover"
         android:layout_width="match_parent"
