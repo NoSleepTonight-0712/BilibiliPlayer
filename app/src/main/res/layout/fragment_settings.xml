@@ -3,7 +3,54 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp"
     tools:context=".ui.SettingsFragment">
 
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="4dp"
+        android:text="@string/settings_play_mode_hint"
+        android:textSize="18sp" />
 
+    <RadioGroup
+        android:id="@+id/settings_play_mode"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp">
+
+        <RadioButton
+            android:id="@+id/settings_play_mode_default"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginVertical="8dp"
+            android:checked="true"
+            android:text="@string/playmode_default"
+            android:textSize="16sp" />
+
+        <RadioButton
+            android:id="@+id/settings_play_mode_random"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginVertical="8dp"
+            android:text="@string/playmode_random"
+            android:textSize="16sp" />
+
+        <RadioButton
+            android:id="@+id/settings_play_mode_smart"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginVertical="8dp"
+            android:text="@string/playmode_smart"
+            android:textSize="16sp" />
+
+        <RadioButton
+            android:id="@+id/settings_play_mode_loop"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginVertical="8dp"
+            android:text="@string/playmode_loop"
+            android:textSize="16sp" />
+    </RadioGroup>
 </LinearLayout>

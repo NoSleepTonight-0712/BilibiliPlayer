@@ -16,6 +16,7 @@ import android.util.Log;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
 
 import com.github.zhixinghey0712.bilibiliplayer.ApplicationMain;
@@ -91,20 +92,19 @@ public class PlayerService extends Service {
         String changeKey = intent.getStringExtra(GlobalVariables.CHANGE_MUSIC_TO_SERVICE);
         if (changeKey != null) {
             if (changeKey.equals(GlobalVariables.FORWARD_MUSIC_TO_SERVICE)) {
-                playMusic(PlayListManager.nextSong());
+                playMusic(PlayListManager.nextPlay(false));
             } else if (changeKey.equals(GlobalVariables.BACKWARD_MUSIC_TO_SERVICE)) {
-                playMusic(PlayListManager.previousSong());
+                playMusic(PlayListManager.nextPlay(true));
             }
         }
 
-        player.setOnCompletionListener(mp -> {
-            playMusic(PlayListManager.nextSong());
-        });
+        player.setOnCompletionListener(mp -> playMusic(PlayListManager.nextPlay(false)));
 
         return super.onStartCommand(intent, flags, startId);
     }
 
-    private void playMusic(@NonNull SongObject song) {
+    private void playMusic(@Nullable SongObject song) {
+        if (song == null) return;
         File f = LocalInfoManager.getMediaFile(song, UpdateMode.FORCE_LOCAL);
         if (f != null) {
             try {

@@ -3,6 +3,7 @@ package com.github.zhixinghey0712.bilibiliplayer.ui;
 import android.app.Activity;
 import android.content.Intent;
 import android.media.MediaPlayer;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -42,11 +43,14 @@ public class FavListContentAdapter extends RecyclerView.Adapter<FavListContentAd
         holder.favlistContentView.setOnClickListener(v -> {
             int position = holder.getLayoutPosition();
             SongObject song = songObjects.get(position);
+            Log.i(GlobalVariables.TAG, "Set current song when click in favlist activity: " + song.toString());
             PlayListManager.setCurrentSong(song);
 
             Intent sentSongIntent = new Intent(activity, PlayerService.class);
             sentSongIntent.putExtra(GlobalVariables.PLAY_RESOURCE, song);
             activity.startService(sentSongIntent);
+
+            activity.finish();
         });
 
         return holder;

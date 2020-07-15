@@ -5,6 +5,8 @@ import android.content.SharedPreferences;
 
 import com.github.zhixinghey0712.bilibiliplayer.ApplicationMain;
 
+import org.jetbrains.annotations.NotNull;
+
 public class UserSettings {
     private static SharedPreferences pref =
             ApplicationMain.getContext().getSharedPreferences("settings", Context.MODE_PRIVATE);
@@ -23,8 +25,8 @@ public class UserSettings {
     public static PlayMode getPlayMode() {
         String trigger = pref.getString("play_mode", "default");
         switch (trigger) {
-            case "default":
-                return PlayMode.DEFAULT;
+            case "loop":
+                return PlayMode.LOOP;
             case "random":
                 return PlayMode.RANDOM;
             case "smart":
@@ -34,7 +36,7 @@ public class UserSettings {
         }
     }
 
-    public static void setPlayMode(PlayMode mode) {
+    public static void setPlayMode(@NotNull PlayMode mode) {
         String key = "play_mode";
         switch (mode) {
             case SMART:
@@ -43,8 +45,8 @@ public class UserSettings {
             case RANDOM:
                 editor.putString(key, "random");
                 break;
-            case DEFAULT:
-                editor.putString(key, "default");
+            case LOOP:
+                editor.putString(key, "loop");
                 break;
             default:
                 editor.putString(key, "default");
@@ -64,14 +66,5 @@ public class UserSettings {
 
     public static boolean isLogin() {
         return !getUid().equals("-1");
-    }
-
-    public static boolean isPlaying() {
-        return pref.getBoolean("isPlaying", false);
-    }
-
-    public static void setPlaying(boolean playing) {
-        editor.putBoolean("isPlaying", playing);
-        editor.apply();
     }
 }

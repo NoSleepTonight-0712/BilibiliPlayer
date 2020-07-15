@@ -11,5 +11,6 @@ package com.github.zhixinghey0712.bilibiliplayer.util;
 public enum PlayMode {
     DEFAULT,
     RANDOM,
-    SMART
+    SMART,
+    LOOP
 }

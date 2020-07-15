@@ -5,6 +5,8 @@ import android.graphics.Bitmap;
 import com.github.zhixinghey0712.bilibiliplayer.util.json.favlistContent.FavlistContentJsonBean;
 import com.github.zhixinghey0712.bilibiliplayer.util.json.favlistContent.Medias;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.io.Serializable;
 
 public class SongObject implements Serializable {
@@ -55,5 +57,11 @@ public class SongObject implements Serializable {
 
     public void setCover(Bitmap cover) {
         Cover = cover;
+    }
+
+    @NotNull
+    @Override
+    public String toString() {
+        return String.format("Song: id: %s, name: %s", bvid, name);
     }
 }

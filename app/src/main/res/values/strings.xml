@@ -33,6 +33,11 @@
     <string name="uid">UID</string>
     <string name="commit_user_info">提&#160;&#160;&#160;&#160;交</string>
     <string name="download">Download</string>
+    <string name="playmode_default">列表循环</string>
+    <string name="playmode_random">随机播放</string>
+    <string name="playmode_smart">调平播放</string>
+    <string name="playmode_loop">单曲循环</string>
+    <string name="settings_play_mode_hint">播放模式</string>
 
     <!--  Toast 统一用t_开头   -->
     <string name="t_network_fail">网络错误，请检查网络连接</string>
@@ -43,4 +48,6 @@
     <string name="t_downloading">正在下载…</string>
     <string name="t_filebroken">文件似乎已经损坏，已经帮你删除，请重新下载</string>
     <string name="t_download_finish">下载完成</string>
+    <string name="t_nothing_in_history">前面再也没有啦</string>
+
 </resources>
