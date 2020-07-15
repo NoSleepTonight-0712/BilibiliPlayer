@@ -40,4 +40,23 @@ public class BilibiliAPI {
         }
         return result;
     }
+
+    /**
+     * @param bvid bv号
+     * @return 获取Cid的API
+     */
+    public static String getCidAPI(String bvid) {
+        final String API = "https://api.bilibili.com/x/player/pagelist?bvid=";
+        return API.concat(bvid);
+    }
+
+    /**
+     * @param cid cid
+     * @param bvid bv号
+     * @return 下载链接API
+     */
+    public static String getDownloadLinkAPI(String cid, String bvid) {
+        final String API = "https://api.bilibili.com/x/player/playurl?cid=%s&fnver=0&fnval=16&type=&otype=json&bvid=%s";
+        return String.format(API, cid, bvid);
+    }
 }

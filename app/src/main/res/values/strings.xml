@@ -32,10 +32,15 @@
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="uid">UID</string>
     <string name="commit_user_info">提&#160;&#160;&#160;&#160;交</string>
+    <string name="download">Download</string>
 
     <!--  Toast 统一用t_开头   -->
     <string name="t_network_fail">网络错误，请检查网络连接</string>
     <string name="t_get_favlist_success">成功获取收藏夹</string>
     <string name="t_get_userinfo_success">成功获取用户信息</string>
     <string name="t_please_login">请先登录</string>
+    <string name="t_download_first">请先下载</string>
+    <string name="t_downloading">正在下载…</string>
+    <string name="t_filebroken">文件似乎已经损坏，已经帮你删除，请重新下载</string>
+    <string name="t_download_finish">下载完成</string>
 </resources>

@@ -65,4 +65,13 @@ public class UserSettings {
     public static boolean isLogin() {
         return !getUid().equals("-1");
     }
+
+    public static boolean isPlaying() {
+        return pref.getBoolean("isPlaying", false);
+    }
+
+    public static void setPlaying(boolean playing) {
+        editor.putBoolean("isPlaying", playing);
+        editor.apply();
+    }
 }

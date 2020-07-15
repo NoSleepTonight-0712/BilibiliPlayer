@@ -1,5 +1,6 @@
 package com.github.zhixinghey0712.bilibiliplayer.ui;
 
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -20,6 +21,7 @@ import com.github.zhixinghey0712.bilibiliplayer.ApplicationMain;
 import com.github.zhixinghey0712.bilibiliplayer.R;
 import com.github.zhixinghey0712.bilibiliplayer.util.FavListObject;
 import com.github.zhixinghey0712.bilibiliplayer.util.GlobalVariables;
+import com.github.zhixinghey0712.bilibiliplayer.util.SongList;
 import com.github.zhixinghey0712.bilibiliplayer.util.UpdateMode;
 import com.github.zhixinghey0712.bilibiliplayer.util.UserSettings;
 import com.github.zhixinghey0712.bilibiliplayer.util.info.LocalInfoManager;
@@ -28,6 +30,9 @@ import com.github.zhixinghey0712.bilibiliplayer.util.json.favlist.FavListJsonBea
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static android.app.Activity.RESULT_OK;
+import static com.github.zhixinghey0712.bilibiliplayer.util.GlobalVariables.TAG;
 
 public class PlaylistFragment extends Fragment {
     private View view;

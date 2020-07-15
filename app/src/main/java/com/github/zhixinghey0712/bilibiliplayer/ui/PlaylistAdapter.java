@@ -14,6 +14,7 @@ import com.github.zhixinghey0712.bilibiliplayer.ApplicationMain;
 import com.github.zhixinghey0712.bilibiliplayer.FavListContentActivity;
 import com.github.zhixinghey0712.bilibiliplayer.R;
 import com.github.zhixinghey0712.bilibiliplayer.util.FavListObject;
+import com.github.zhixinghey0712.bilibiliplayer.util.GlobalVariables;
 import com.github.zhixinghey0712.bilibiliplayer.util.json.favlist.FavList;
 
 import java.util.List;
@@ -52,7 +53,7 @@ public class PlaylistAdapter extends RecyclerView.Adapter<PlaylistAdapter.ViewHo
             intent.putExtra("fid", favList.getFid());
             intent.putExtra("name", favList.getListName());
             intent.putExtra("total", favList.getTotal());
-            ApplicationMain.getContext().startActivity(intent);
+            playListActivity.startActivityForResult(intent, GlobalVariables.RETURN_SONG_LIST_INTENT_CODE);
         });
 
         return holder;

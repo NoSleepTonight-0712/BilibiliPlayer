@@ -1,64 +1,49 @@
 package com.github.zhixinghey0712.bilibiliplayer.util.player;
 
-import java.util.ArrayDeque;
+import com.github.zhixinghey0712.bilibiliplayer.util.SongList;
+import com.github.zhixinghey0712.bilibiliplayer.util.SongObject;
 
-import static com.github.zhixinghey0712.bilibiliplayer.util.PlayMode.*;
+public class PlayListManager {
+    private static SongList songList;
+    private static SongObject currentSong;
 
-public class PlayListManager extends ArrayDeque<Music> {
-    private boolean DequeFull = false;
-    private final int DEQUE_MAX_LENGTH = 30;
-    private int CurrentPlayIndex = 0;
-    private com.github.zhixinghey0712.bilibiliplayer.util.PlayMode PlayMode = DEFAULT;
-
-    public PlayListManager() {
-        // TODO 从文件加载历史记录
-
-        // 无历史记录
-
+    public static SongList getSongList() {
+        return songList;
     }
 
-    public void playNext() {
-
+    public static void setSongList(SongList songList) {
+        PlayListManager.songList = songList;
     }
 
-    public void playPrevious() {
-        if (this.peekFirst() == null) {
-            this.addFirst(generatePlayListItem());
+    public static SongObject getCurrentSong() {
+        return currentSong;
+    }
+
+    public static void setCurrentSong(SongObject currentSong) {
+        PlayListManager.currentSong = currentSong;
+    }
+
+    public static SongObject nextSong() {
+        int index = songList.getSongObjects().indexOf(currentSong);
+        SongObject result;
+        if (index == songList.getSize() - 1) {
+            result = songList.getSongObjects().get(0);
+        } else {
+            result = songList.getSongObjects().get(index + 1);
         }
-        
-    }
-
-    /**
-     * 返回下一次播放的歌（不再队内）
-     * @return 接下来播放的歌 {@link Music}
-     */
-    private Music generatePlayListItem() {
-        Music result = null;
-        switch (PlayMode) {
-            case DEFAULT:
-                result = generatePlayListItemInDefaultMode();
-                break;
-            case RANDOM:
-                result = generatePlayListItemInRandomMode();
-                break;
-            case SMART:
-                result = generatePlayListItemInSmartMode();
-                break;
-        }
+        currentSong = result;
         return result;
     }
 
-    private Music generatePlayListItemInDefaultMode() {
-        return null;
-    }
-
-    private Music generatePlayListItemInRandomMode() {
-        return null;
-
-    }
-
-    private Music generatePlayListItemInSmartMode() {
-        return null;
-
+    public static SongObject previousSong() {
+        int index = songList.getSongObjects().indexOf(currentSong);
+        SongObject result;
+        if (index == 0) {
+            result = songList.getSongObjects().get(songList.getSize() - 1);
+        } else {
+            result = songList.getSongObjects().get(index - 1);
+        }
+        currentSong = result;
+        return result;
     }
 }

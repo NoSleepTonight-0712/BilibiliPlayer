@@ -1,6 +1,7 @@
 package com.github.zhixinghey0712.bilibiliplayer;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
@@ -10,10 +11,15 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
+import android.content.ComponentName;
+import android.content.Context;
+import android.content.Intent;
+import android.content.ServiceConnection;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.IBinder;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
@@ -28,10 +34,13 @@ import com.github.zhixinghey0712.bilibiliplayer.ui.PlaylistFragment;
 import com.github.zhixinghey0712.bilibiliplayer.ui.SettingsFragment;
 import com.github.zhixinghey0712.bilibiliplayer.ui.UserFragment;
 import com.github.zhixinghey0712.bilibiliplayer.util.GlobalVariables;
+import com.github.zhixinghey0712.bilibiliplayer.util.SongList;
 import com.github.zhixinghey0712.bilibiliplayer.util.UpdateMode;
 import com.github.zhixinghey0712.bilibiliplayer.util.UserSettings;
 import com.github.zhixinghey0712.bilibiliplayer.util.info.LocalInfoManager;
 import com.github.zhixinghey0712.bilibiliplayer.util.json.user.UserInfoJsonBean;
+import com.github.zhixinghey0712.bilibiliplayer.util.player.PlayerBinder;
+import com.github.zhixinghey0712.bilibiliplayer.util.player.PlayerService;
 import com.google.android.material.navigation.NavigationView;
 
 import java.io.FileNotFoundException;
@@ -44,6 +53,29 @@ public class MainActivity extends AppCompatActivity {
     private final OkHttpClient client = new OkHttpClient();
     public Handler uiHandler = new Handler();
     private ActionBar actionBar;
+
+    @Nullable
+    public SongList getSongList() {
+        return songList;
+    }
+
+    @Nullable private SongList songList;
+
+    public PlayerBinder.PlayBinderPointer getpBinder() {
+        return pBinder;
+    }
+
+    private PlayerBinder.PlayBinderPointer pBinder = new PlayerBinder.PlayBinderPointer();
+    private ServiceConnection connection = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder service) {
+            pBinder.setBinder((PlayerBinder) service);
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName name) {
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,6 +94,7 @@ public class MainActivity extends AppCompatActivity {
 
         replaceFragment(new PlayerFragment());
         initDrawerMenu();
+        initMediaPlayer();
     }
 
     @Override
@@ -160,5 +193,20 @@ public class MainActivity extends AppCompatActivity {
         if (actionBar != null) {
             actionBar.setTitle(stringId);
         }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+    }
+
+//    @Override
+//    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+//        super.onActivityResult(requestCode, resultCode, data);
+//    }
+
+    private void initMediaPlayer() {
+        Intent bindStartPlayIntent = new Intent(this, PlayerService.class);
+        bindService(bindStartPlayIntent, connection, Context.BIND_AUTO_CREATE);
     }
 }
