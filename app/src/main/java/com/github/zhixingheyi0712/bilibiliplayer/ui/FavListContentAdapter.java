@@ -15,7 +15,11 @@ import com.github.zhixingheyi0712.bilibiliplayer.R;
 import com.github.zhixingheyi0712.bilibiliplayer.util.GlobalVariables;
 import com.github.zhixingheyi0712.bilibiliplayer.util.SongObject;
 import com.github.zhixingheyi0712.bilibiliplayer.util.player.PlayListManager;
+import com.github.zhixingheyi0712.bilibiliplayer.util.player.PlayerEvents;
 import com.github.zhixingheyi0712.bilibiliplayer.util.player.PlayerService;
+
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
 
 import java.util.List;
 
@@ -40,9 +44,8 @@ public class FavListContentAdapter extends RecyclerView.Adapter<FavListContentAd
             Log.i(GlobalVariables.TAG, "Set current song when click in favlist activity: " + song.toString());
             PlayListManager.setCurrentSong(song);
 
-            Intent sentSongIntent = new Intent(activity, PlayerService.class);
-            sentSongIntent.putExtra(GlobalVariables.PLAY_RESOURCE, song);
-            activity.startService(sentSongIntent);
+            EventBus.getDefault().postSticky(new PlayerEvents.SetPlayingButtonState(true));
+            EventBus.getDefault().post(new PlayerEvents.SetPlayerResource(song));
 
             activity.finish();
         });
@@ -66,6 +69,7 @@ public class FavListContentAdapter extends RecyclerView.Adapter<FavListContentAd
         View favlistContentView;
         TextView name;
         TextView singer;
+
         public ViewHolder(@NonNull View view) {
             super(view);
             favlistContentView = view;

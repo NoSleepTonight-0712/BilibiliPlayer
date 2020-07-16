@@ -1,12 +1,17 @@
 package com.github.zhixingheyi0712.bilibiliplayer.util.player;
 
+import android.app.Application;
 import android.widget.Toast;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.github.zhixingheyi0712.bilibiliplayer.ApplicationMain;
 import com.github.zhixingheyi0712.bilibiliplayer.R;
 import com.github.zhixingheyi0712.bilibiliplayer.util.PlayMode;
 import com.github.zhixingheyi0712.bilibiliplayer.util.SongObject;
 import com.github.zhixingheyi0712.bilibiliplayer.util.UserSettings;
+
+import org.greenrobot.eventbus.EventBus;
 
 public class PlayListHistory {
     private int LIMIT = 20;
@@ -26,7 +31,7 @@ public class PlayListHistory {
     public SongObject back(SongObject song) {
         SongObject result = previous.pop();
         if (result == null) {
-            Toast.makeText(ApplicationMain.getContext(), R.string.t_nothing_in_history, Toast.LENGTH_SHORT).show();
+            EventBus.getDefault().post(new PlayerEvents.HintToast(R.string.t_nothing_in_history));
             return null;
         }
         future.push(song);

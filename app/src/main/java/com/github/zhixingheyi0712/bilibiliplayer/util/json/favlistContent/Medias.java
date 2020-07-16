@@ -1,7 +1,15 @@
 package com.github.zhixingheyi0712.bilibiliplayer.util.json.favlistContent;
 
 public class Medias {
+    public int getPlay_times() {
+        return play_times;
+    }
 
+    public void setPlay_times(int play_times) {
+        this.play_times = play_times;
+    }
+
+    private int play_times;
     private long id;
     private int type;
     private String title;

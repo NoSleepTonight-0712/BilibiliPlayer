@@ -6,13 +6,6 @@ import android.os.Binder;
 import androidx.annotation.Nullable;
 
 public class PlayerBinder extends Binder {
-    public boolean isPlaying() {
-        return isPlaying;
-    }
-
-    public void setPlaying(boolean playing) {
-        isPlaying = playing;
-    }
 
     public MediaPlayer getPlayer() {
         return player;
@@ -23,8 +16,6 @@ public class PlayerBinder extends Binder {
     }
 
     private MediaPlayer player;
-
-    private boolean isPlaying;
 
     public boolean isPrepared() {
         return isPrepared;

@@ -63,4 +63,8 @@ public class SongObject implements Serializable {
     public String toString() {
         return String.format("Song: id: %s, name: %s", bvid, name);
     }
+
+    public String getInfoString() {
+        return name + " - " + singer;
+    }
 }

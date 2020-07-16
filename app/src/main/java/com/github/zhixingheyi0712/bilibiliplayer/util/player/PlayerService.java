@@ -23,6 +23,10 @@ import com.github.zhixingheyi0712.bilibiliplayer.util.SongObject;
 import com.github.zhixingheyi0712.bilibiliplayer.util.UpdateMode;
 import com.github.zhixingheyi0712.bilibiliplayer.util.info.LocalInfoManager;
 
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.Objects;
@@ -33,8 +37,11 @@ public class PlayerService extends Service {
     private PlayerBinder binder = new PlayerBinder();
 
     @Override
+    @Subscribe
     public void onCreate() {
         super.onCreate();
+
+        EventBus.getDefault().register(this);
 
         Log.i(TAG, "onCreate");
         String ID = "com.github.zhixingheyi0712.bilibili";    //这里的id里面输入自己的项目的包的路径
@@ -63,38 +70,34 @@ public class PlayerService extends Service {
         startForeground(1, notification1);
 
         player = new MediaPlayer();
+        player.setOnCompletionListener(mp -> playMusic(PlayListManager.nextPlay(false)));
         binder.setPlayer(player);
     }
 
-    @Override
-    public int onStartCommand(Intent intent, int flags, int startId) {
-        if (intent.getBooleanExtra(GlobalVariables.SWITCH_PLAY_PAUSE_TO_SERVICE, false)) {
-            // 切换播放/暂停
-            if (player.isPlaying()) {
-                player.pause();
-            } else {
-                player.start();
-            }
-            binder.setPlaying(player.isPlaying());
+    @Subscribe(threadMode = ThreadMode.BACKGROUND)
+    public void switchPlayPauseService(PlayerEvents.SetPlayingServiceState event) {
+        if (player.isPlaying()) {
+            player.pause();
+            EventBus.getDefault().postSticky(new PlayerEvents.SetPlayingButtonState(false));
+        } else {
+            player.start();
+            EventBus.getDefault().postSticky(new PlayerEvents.SetPlayingButtonState(true));
         }
+        EventBus.getDefault().removeStickyEvent(event);
+    }
 
-        SongObject song = (SongObject) intent.getSerializableExtra(GlobalVariables.PLAY_RESOURCE);
-        if (song != null) {
-            playMusic(song);
+    @Subscribe(threadMode = ThreadMode.BACKGROUND)
+    public void setPlayerResource(PlayerEvents.SetPlayerResource event) {
+        playMusic(event.getSong());
+    }
+
+    @Subscribe(threadMode = ThreadMode.BACKGROUND)
+    public void playNextSong(PlayerEvents.PlayNextSong event) {
+        if (event.isPrevious()) {
+            playMusic(PlayListManager.nextPlay(true));
+        } else {
+            playMusic(PlayListManager.nextPlay(false));
         }
-
-        String changeKey = intent.getStringExtra(GlobalVariables.CHANGE_MUSIC_TO_SERVICE);
-        if (changeKey != null) {
-            if (changeKey.equals(GlobalVariables.FORWARD_MUSIC_TO_SERVICE)) {
-                playMusic(PlayListManager.nextPlay(false));
-            } else if (changeKey.equals(GlobalVariables.BACKWARD_MUSIC_TO_SERVICE)) {
-                playMusic(PlayListManager.nextPlay(true));
-            }
-        }
-
-        player.setOnCompletionListener(mp -> playMusic(PlayListManager.nextPlay(false)));
-
-        return super.onStartCommand(intent, flags, startId);
     }
 
     private void playMusic(@Nullable SongObject song) {
@@ -105,10 +108,9 @@ public class PlayerService extends Service {
                 player.reset();
                 player.setDataSource(f.getPath());
                 player.prepareAsync();
-                player.setOnPreparedListener(mp -> {
-                    mp.start();
-                    binder.setPrepared(true);
-                });
+                EventBus.getDefault().postSticky(new PlayerEvents.SetPlayingInfo(song));
+                PlayListManager.setCurrentSong(song);
+                player.setOnPreparedListener(MediaPlayer::start);
             } catch (IOException e) {
                 Toast.makeText(ApplicationMain.getContext(), R.string.t_filebroken, Toast.LENGTH_SHORT).show();
                 f.delete();
@@ -127,6 +129,7 @@ public class PlayerService extends Service {
     @Override
     public void onDestroy() {
         super.onDestroy();
+        EventBus.getDefault().unregister(this);
         player = null;
     }
 }

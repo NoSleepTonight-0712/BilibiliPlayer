@@ -12,6 +12,7 @@ import com.github.zhixingheyi0712.bilibiliplayer.util.GlobalVariables;
 import com.github.zhixingheyi0712.bilibiliplayer.util.json.cid.CidJsonBean;
 import com.github.zhixingheyi0712.bilibiliplayer.util.json.downloadLink.DownloadLinksJsonBean;
 import com.github.zhixingheyi0712.bilibiliplayer.util.json.favlistContent.FavlistContentJsonBean;
+import com.github.zhixingheyi0712.bilibiliplayer.util.json.favlistContent.Medias;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -120,7 +121,6 @@ public class Network {
             }
             page++;
         }
-
         try {
             FileOutputStream out = ApplicationMain.getContext().openFileOutput(GlobalVariables.FavListIndexFileName(fid), Context.MODE_PRIVATE);
             out.write(JSON.toJSONString(result).getBytes());
