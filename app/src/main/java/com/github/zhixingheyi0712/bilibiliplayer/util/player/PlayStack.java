@@ -21,6 +21,7 @@ public class PlayStack extends ArrayDeque<SongObject> {
 
     @Override
     public void push(SongObject songObject) {
+        if (songObject == null) return;
         if (size() >= limit) {
             // 栈满
             pollFirst();

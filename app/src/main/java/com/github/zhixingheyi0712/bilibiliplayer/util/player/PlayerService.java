@@ -34,7 +34,6 @@ import java.util.Objects;
 public class PlayerService extends Service {
     private final String TAG = GlobalVariables.TAG + ": PlayService";
     private MediaPlayer player;
-    private PlayerBinder binder = new PlayerBinder();
 
     @Override
     @Subscribe
@@ -44,11 +43,11 @@ public class PlayerService extends Service {
         EventBus.getDefault().register(this);
 
         Log.i(TAG, "onCreate");
-        String ID = "com.github.zhixingheyi0712.bilibili";    //这里的id里面输入自己的项目的包的路径
+        String ID = "com.github.zhixingheyi0712.bilibili";
         String NAME = "播放器";
         Intent intent = new Intent(PlayerService.this, MainActivity.class);
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, 0);
-        NotificationCompat.Builder notification; //创建服务对象
+        NotificationCompat.Builder notification;
         NotificationManager manager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
 
         NotificationChannel channel = new NotificationChannel(ID, NAME, NotificationManager.IMPORTANCE_HIGH);
@@ -71,11 +70,40 @@ public class PlayerService extends Service {
 
         player = new MediaPlayer();
         player.setOnCompletionListener(mp -> playMusic(PlayListManager.nextPlay(false)));
-        binder.setPlayer(player);
     }
 
+    /**
+     * This method only receive the stop playing intent.
+     * {@link com.github.zhixingheyi0712.bilibiliplayer.ui.SettingsFragment}
+     * @param intent stop playing intent
+     * @param flags auto
+     * @param startId auto
+     * @return auto
+     */
+    @Override
+    public int onStartCommand(Intent intent, int flags, int startId) {
+        if (intent.getBooleanExtra(GlobalVariables.STOP_PLAYING, false)) {
+            EventBus.getDefault().post(new PlayerEvents.SetPlayingServiceState());
+        }
+        return super.onStartCommand(intent, flags, startId);
+    }
+
+    /**
+     * {@link EventBus}
+     * switch player playing or pause.
+     * will resent a sticky post to update play/pause button.
+     * @see com.github.zhixingheyi0712.bilibiliplayer.ui.PlayerFragment
+     * @param event {@link PlayerEvents.SetPlayingServiceState}
+     */
     @Subscribe(threadMode = ThreadMode.BACKGROUND)
     public void switchPlayPauseService(PlayerEvents.SetPlayingServiceState event) {
+        if (event.isForcePauseEnabled()) {
+            if (player.isPlaying()) {
+                player.pause();
+            }
+            EventBus.getDefault().postSticky(new PlayerEvents.SetPlayingButtonState(false));
+        }
+
         if (player.isPlaying()) {
             player.pause();
             EventBus.getDefault().postSticky(new PlayerEvents.SetPlayingButtonState(false));
@@ -86,11 +114,21 @@ public class PlayerService extends Service {
         EventBus.getDefault().removeStickyEvent(event);
     }
 
+    /**
+     * set player resource. the event contains a song.
+     * @see EventBus
+     * @param event {@link PlayerEvents.SetPlayerResource}
+     */
     @Subscribe(threadMode = ThreadMode.BACKGROUND)
     public void setPlayerResource(PlayerEvents.SetPlayerResource event) {
         playMusic(event.getSong());
     }
 
+    /**
+     * playNextSong.
+     * Notice the "next" means the next song to play, it maybe the previous one if event.isPrevious() == true.
+     * @param event {@link PlayerEvents.PlayNextSong}
+     */
     @Subscribe(threadMode = ThreadMode.BACKGROUND)
     public void playNextSong(PlayerEvents.PlayNextSong event) {
         if (event.isPrevious()) {
@@ -100,6 +138,11 @@ public class PlayerService extends Service {
         }
     }
 
+    /**
+     * play music by SongObject.
+     * call this method to play a music.
+     * @param song song
+     */
     private void playMusic(@Nullable SongObject song) {
         if (song == null) return;
         File f = LocalInfoManager.getMediaFile(song, UpdateMode.FORCE_LOCAL);
@@ -112,7 +155,8 @@ public class PlayerService extends Service {
                 PlayListManager.setCurrentSong(song);
                 player.setOnPreparedListener(MediaPlayer::start);
             } catch (IOException e) {
-                Toast.makeText(ApplicationMain.getContext(), R.string.t_filebroken, Toast.LENGTH_SHORT).show();
+                Toast.makeText(ApplicationMain.getContext(),
+                        R.string.t_filebroken, Toast.LENGTH_SHORT).show();
                 f.delete();
                 e.printStackTrace();
             }
@@ -123,7 +167,7 @@ public class PlayerService extends Service {
 
     @Override
     public IBinder onBind(Intent intent) {
-        return binder;
+        return null;
     }
 
     @Override

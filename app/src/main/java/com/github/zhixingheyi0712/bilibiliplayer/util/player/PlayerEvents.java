@@ -5,6 +5,11 @@ import android.media.audiofx.AcousticEchoCanceler;
 import com.github.zhixingheyi0712.bilibiliplayer.util.SongObject;
 
 public class PlayerEvents {
+    /**
+     * Update the button in
+     * {@link com.github.zhixingheyi0712.bilibiliplayer.ui.PlayerFragment}
+     * notice it cannot actually change the player state.
+     */
     public static class SetPlayingButtonState {
         public boolean isPlaying() {
             return playing;
@@ -17,9 +22,25 @@ public class PlayerEvents {
         }
     }
 
+    /**
+     * switch play/pause to player.
+     * notice it cannot change the button.
+     */
     public static class SetPlayingServiceState {
+        private boolean force_pause = false;
+
+        public void enableForcePause() {
+            force_pause = true;
+        }
+
+        public boolean isForcePauseEnabled() {
+            return force_pause;
+        }
     }
 
+    /**
+     * set player resource.
+     */
     public static class SetPlayerResource {
         public SongObject getSong() {
             return song;
@@ -32,6 +53,10 @@ public class PlayerEvents {
         private SongObject song;
     }
 
+    /**
+     * notice the "next" means the next song given to the player.
+     * It maybe the previous one is previous == true.
+     */
     public static class PlayNextSong {
         public boolean isPrevious() {
             return previous;
@@ -44,6 +69,10 @@ public class PlayerEvents {
         }
     }
 
+    /**
+     * update Info TextView in
+     * {@link com.github.zhixingheyi0712.bilibiliplayer.ui.PlayerFragment}
+     */
     public static class SetPlayingInfo {
         private SongObject song;
 
@@ -56,6 +85,9 @@ public class PlayerEvents {
         }
     }
 
+    /**
+     * send a toast in {@link com.github.zhixingheyi0712.bilibiliplayer.MainActivity}
+     */
     public static class HintToast {
         private int id;
         public HintToast(int id) {

@@ -49,5 +49,8 @@
     <string name="t_filebroken">文件似乎已经损坏，已经帮你删除，请重新下载</string>
     <string name="t_download_finish">下载完成</string>
     <string name="t_nothing_in_history">前面再也没有啦</string>
+    <string name="stop_playing">停止播放:</string>
+    <string name="stop_playing_2">分钟后</string>
+    <string name="confirm">确认</string>
 
 </resources>

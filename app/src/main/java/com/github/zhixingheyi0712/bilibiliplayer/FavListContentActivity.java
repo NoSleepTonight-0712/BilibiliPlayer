@@ -1,6 +1,7 @@
 package com.github.zhixingheyi0712.bilibiliplayer;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
@@ -39,7 +40,6 @@ public class FavListContentActivity extends AppCompatActivity {
     private String fid;
     private int total;
     private Handler uiHandler;
-    private List<FavListObject> favListObjects = new ArrayList<>();
     private FavListContentAdapter adapter;
     private SwipeRefreshLayout swipe;
     private final ThreadPoolExecutor threadPool = new ThreadPoolExecutor(3, 5, 10,
@@ -50,17 +50,22 @@ public class FavListContentActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_fav_list_content);
 
+        // 从PlayerAdapter发出的intent
         Intent intent = getIntent();
         fid = intent.getStringExtra("fid");
         total = intent.getIntExtra("total", -1);
+
+        // 用于发Toast
         uiHandler = new Handler();
 
+        // 滚动菜单相关
         RecyclerView recyclerView = findViewById(R.id.playlist_content_view);
         LinearLayoutManager manager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(manager);
         adapter = new FavListContentAdapter(songObjectList.getSongObjects(), this);
         recyclerView.setAdapter(adapter);
 
+        // 顶部栏
         Toolbar toolbar = findViewById(R.id.songlist_toolbar);
         setSupportActionBar(toolbar);
         actionBar = getSupportActionBar();
@@ -69,24 +74,38 @@ public class FavListContentActivity extends AppCompatActivity {
             actionBar.setTitle(intent.getStringExtra("name"));
         }
 
+        // 下拉刷新
         swipe = findViewById(R.id.playlist_content_refresh);
         swipe.setColorSchemeResources(R.color.TianYiBlue);
         swipe.setOnRefreshListener(this::refreshFavlistContent);
-
     }
 
+    /**
+     * 滚动菜单
+     * @param menu 自动填充
+     * @return true
+     */
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.playlist_toolbar, menu);
         return true;
     }
 
+    /**
+     * 退出歌单界面
+     *
+     */
     @Override
     protected void onPause() {
         super.onPause();
         PlayListManager.setSongList(songObjectList.clone());
     }
 
+    /**
+     * 全部下载
+     * @param item 下载按钮
+     * @return true
+     */
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()) {
@@ -128,6 +147,10 @@ public class FavListContentActivity extends AppCompatActivity {
         updateUI(UpdateMode.LOCAL);
     }
 
+    /**
+     * 更新收藏夹UI（滚动列表）
+     * @param mode 更新模式，除了下拉刷新都是LOCAL {@link com.github.zhixingheyi0712.bilibiliplayer.util.PlayMode}
+     */
     private void updateUI(UpdateMode mode) {
         if (mode == UpdateMode.ONLINE) {
             new updateFavlistContent(swipe, uiHandler, adapter, songObjectList, fid, total, UpdateMode.ONLINE).start();
@@ -137,6 +160,9 @@ public class FavListContentActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * 开新线程更新UI，可能有网络传输所以要多线程不然会ANR
+     */
     static class updateFavlistContent extends Thread {
         private SwipeRefreshLayout swipe;
         private Handler ui;
@@ -158,6 +184,10 @@ public class FavListContentActivity extends AppCompatActivity {
             this.total = total;
         }
 
+        /**
+         * 下拉刷新停止并更新数据
+         * 不需要自己调用，这个方法会自动被 {@link #run()}调用
+         */
         private void updateFavlistContentUI() {
             ui.post(() -> {
                 adapter.notifyDataSetChanged();
@@ -165,9 +195,14 @@ public class FavListContentActivity extends AppCompatActivity {
             });
         }
 
+        /**
+         * 获取收藏夹内容并加入songlist, 同时呼起更新UI
+         * {@link #updateFavlistContentUI()}
+         * {@link LocalInfoManager}
+         */
         @Override
         public void run() {
-            FavlistContentJsonBean json = LocalInfoManager.getFavListContent(fid, total, mode);
+            @Nullable FavlistContentJsonBean json = LocalInfoManager.getFavListContent(fid, total, mode);
             if (json == null) return;
             songlist.setName(json.getData().getInfo().getTitle());
             songlist.setFid(String.valueOf(json.getData().getInfo().getId()));

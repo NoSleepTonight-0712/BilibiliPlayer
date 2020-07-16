@@ -37,9 +37,7 @@ public class UserFragment extends Fragment {
         Button loginButton = view.findViewById(R.id.user_commit_info_button);
 
         uiHandler = new Handler();
-        loginButton.setOnClickListener(v -> {
-            updateUI(UpdateMode.ONLINE);
-        });
+        loginButton.setOnClickListener(v -> updateUI(UpdateMode.ONLINE));
         return view;
     }
 
@@ -115,9 +113,12 @@ public class UserFragment extends Fragment {
         @Override
         public void run() {
             info = LocalInfoManager.getUserInfo(Uid, mode);
+            if (info == null) {
+                Log.e(GlobalVariables.TAG, "User Info json analyse error.");
+            }
             Uid = String.valueOf(info.getData().getMid());
             name = info.getData().getName();
-            face = LocalInfoManager.saveUserFace(info.getData().getFace(), mode);
+            face = LocalInfoManager.getUserFace(info.getData().getFace(), mode);
             updateUserInfoUI();
         }
     }

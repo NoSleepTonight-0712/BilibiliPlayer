@@ -6,19 +6,14 @@ import androidx.fragment.app.Fragment;
 
 import android.app.Activity;
 import android.os.Bundle;
-import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.github.zhixingheyi0712.bilibiliplayer.MainActivity;
 import com.github.zhixingheyi0712.bilibiliplayer.R;
-import com.github.zhixingheyi0712.bilibiliplayer.util.SongObject;
 import com.github.zhixingheyi0712.bilibiliplayer.util.player.PlayListManager;
-import com.github.zhixingheyi0712.bilibiliplayer.util.player.PlayerBinder;
 import com.github.zhixingheyi0712.bilibiliplayer.util.player.PlayerEvents;
 
 import org.greenrobot.eventbus.EventBus;
@@ -88,11 +83,6 @@ public class PlayerFragment extends Fragment {
             play.setImageResource(R.drawable.ic_pause);
         }
         EventBus.getDefault().removeStickyEvent(event);
-    }
-
-    @Subscribe(threadMode = ThreadMode.MAIN, sticky = true)
-    public void sendToastHint(@NotNull PlayerEvents.HintToast event) {
-        Toast.makeText(getContext(), event.getId(), Toast.LENGTH_SHORT).show();
     }
 
     @Override

@@ -23,6 +23,7 @@ import android.os.Handler;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.view.GravityCompat;
 
 import okhttp3.Call;
 import okhttp3.OkHttpClient;
@@ -30,10 +31,30 @@ import okhttp3.Request;
 import okhttp3.Response;
 import okhttp3.ResponseBody;
 
+/**
+ * <p>
+ * The relationship of favlist, favlistcontent and media:
+ * <p>
+ * favlistcontent    media
+ * |                 |
+ * user - favlist --favlistcontent ---media
+ * \                 \
+ * favlistcontent    media
+ * <p>
+ * notice that a user have only one favlist, but may have many favlistcontent, and each favlistcontent may have many medias.
+ * you can find favlist in https://space.bilibili.com/your_uid/favlist in the left, and the default favlistcontent in the center.
+ *
+ * @author ZhiXingHeYi
+ */
 public class Network {
     private static final OkHttpClient client = new OkHttpClient();
     private static final Handler uiHandler = new Handler();
 
+    /**
+     * download FavList from web.
+     * @thread background
+     * @param uid uid
+     */
     public static void getFavListFile(String uid) {
         String API = BilibiliAPI.getFavListAPI(uid);
         Request request = new Request.Builder().url(API).build();
@@ -55,6 +76,12 @@ public class Network {
         }
     }
 
+    /**
+     * download userinfo json from web.
+     * contains face, uid, name and so on.
+     * @thread background
+     * @param uid uid
+     */
     public static void getUserInfoFile(String uid) {
         String API = BilibiliAPI.getUserInfoAPI(uid);
         Request request = new Request.Builder().url(API).build();
@@ -73,6 +100,10 @@ public class Network {
         }
     }
 
+    /**
+     * download user face image.
+     * @param link face image link. you can find it by call {@link #getUserInfoFile(String)} and analyse the json.
+     */
     public static void getUserFace(String link) {
         link = link.replace("http://", "https://");
         Request request = new Request.Builder().url(link).build();
@@ -91,6 +122,13 @@ public class Network {
         }
     }
 
+    /**
+     * download favlistcontent json.
+     * download page by page.
+     * @param fid favlist id
+     * @param total total number.
+     * @thread background
+     */
     public static void getFavListContent(String fid, int total) {
         Log.i(GlobalVariables.TAG, "start fav content page get.");
         ArrayList<String> apis = BilibiliAPI.getFavListContentAPI(fid, total);
@@ -131,10 +169,11 @@ public class Network {
     }
 
     /**
-     * 获取cid，cid数据不会持久化存储
-     *
-     * @param bvid bv号
+     * get Cid of a video
+     * <em>Cid will not be saved locally!!!</em>
+     * @param bvid bv
      * @return cid
+     * @thread background
      */
     @Nullable
     public static String getCid(String bvid) {
@@ -142,9 +181,12 @@ public class Network {
     }
 
     /**
+     * get Cid of a video
+     * <em>Cid will not be saved locally!!!</em>
      * @param bvid bv
-     * @param p    分p，从0开始
-     * @return cid
+     * @param p p. usually 0 if it has not plurality p.
+     * @return cid or null, cause null if {@link IOException} or {@link NullPointerException} occur.
+     * @thread background
      */
     @Nullable
     public static String getCid(String bvid, int p) {
@@ -166,7 +208,9 @@ public class Network {
     /**
      * @param cid  cid
      * @param bvid bv
-     * @return 下载链接
+     * @return audio download link. notice it is only a link.
+     *         cause null if {@link IOException} or {@link NullPointerException} occur.
+     * @thread background
      */
     @Nullable
     public static String getDownloadLink(String cid, String bvid) {
@@ -199,8 +243,13 @@ public class Network {
         }
     }
 
+    /**
+     * download audio. notice the download will fail if the file is smaller than 1kb.
+     * @param bvid bvid
+     * @param link download link. you can get it by call {@link #getDownloadLink(String, String)}
+     * @thread background
+     */
     public static void downloadMedia(@NonNull String bvid, @NonNull String link) {
-
         Request request = new Request.Builder().url(link)
                 .addHeader("User-Agent",
                         "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3970.5 Safari/537.36")
@@ -211,13 +260,19 @@ public class Network {
             Response response;
             FileOutputStream out;
             byte[] downloadContent;
+            int times = 0;
 
             while (true) {
                 response = call.execute();
                 out = ApplicationMain.getContext()
                         .openFileOutput(GlobalVariables.MediaFileName(bvid), Context.MODE_PRIVATE);
                 downloadContent = response.body().bytes();
-                if (downloadContent.length < 1024 * 10) { // 10kb以下认为下载出错了
+                if (downloadContent.length < 1024) { // 1kb以下认为下载出错了
+                    times++;
+                    if (times >= 3) {
+                        Log.e(GlobalVariables.TAG, "Too many failed when download "+ bvid);
+                        return;
+                    }
                     Log.e(GlobalVariables.TAG, bvid + "下载可能出错，重新下载");
                 } else {
                     // 认为下载成功

@@ -1,11 +1,7 @@
 package com.github.zhixingheyi0712.bilibiliplayer.util.player;
 
-import android.app.Application;
-import android.widget.Toast;
+import androidx.annotation.NonNull;
 
-import androidx.appcompat.app.AppCompatActivity;
-
-import com.github.zhixingheyi0712.bilibiliplayer.ApplicationMain;
 import com.github.zhixingheyi0712.bilibiliplayer.R;
 import com.github.zhixingheyi0712.bilibiliplayer.util.PlayMode;
 import com.github.zhixingheyi0712.bilibiliplayer.util.SongObject;
@@ -18,6 +14,11 @@ public class PlayListHistory {
     private PlayStack previous = new PlayStack(LIMIT);
     private PlayStack future = new PlayStack(LIMIT);
 
+    /**
+     * called when a song is finished.
+     * @param song current song
+     * @return next song
+     */
     public SongObject finish(SongObject song) {
         previous.push(song);
         SongObject result = future.pop();
@@ -28,7 +29,12 @@ public class PlayListHistory {
         return result;
     }
 
-    public SongObject back(SongObject song) {
+    /**
+     * call when user press the previous button.
+     * @param song current song
+     * @return previous song
+     */
+    public SongObject back(@NonNull SongObject song) {
         SongObject result = previous.pop();
         if (result == null) {
             EventBus.getDefault().post(new PlayerEvents.HintToast(R.string.t_nothing_in_history));
@@ -38,8 +44,20 @@ public class PlayListHistory {
         return result;
     }
 
+    /**
+     * this will be called when {@link #future} is empty.
+     */
     private void addToFuture() {
         PlayMode mode = UserSettings.getPlayMode();
-        future.addFirst(PlayListManager.getNextSong(mode));
+        SongObject song = PlayListManager.getNextSong(mode);
+        if (song == null) return;
+        future.addFirst(song);
+    }
+
+    /**
+     * this will be called when the playmode is changed.
+     */
+    public void clearFutureStack() {
+        future.clear();
     }
 }

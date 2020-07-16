@@ -14,6 +14,10 @@ public class ApplicationMain extends Application {
         context = getApplicationContext();
     }
 
+    /**
+     * 全局可用的获取Context
+     * @return 全局Context
+     */
     public static Context getContext() {
         return context;
     }

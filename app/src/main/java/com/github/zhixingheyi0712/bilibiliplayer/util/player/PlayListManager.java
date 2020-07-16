@@ -4,6 +4,9 @@ import com.github.zhixingheyi0712.bilibiliplayer.util.PlayMode;
 import com.github.zhixingheyi0712.bilibiliplayer.util.SongList;
 import com.github.zhixingheyi0712.bilibiliplayer.util.SongObject;
 
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
 import java.util.Random;
 
 public class PlayListManager {
@@ -35,7 +38,22 @@ public class PlayListManager {
         return result;
     }
 
-    protected static SongObject getNextSong(PlayMode mode) {
+    /**
+     * the main method to getNextSong.
+     * <em>notice: the "next" is really the next.</em>
+     * It will be called if a song is finished, or the user press the "next song" button.
+     * The actual logic is in the following methods:
+     *
+     * @param mode mode
+     * @return song
+     * @see #nextSongInDefault()
+     * @see #nextSongInRandom()
+     * @see #nextSongInSmart()
+     * @see #nextSongInLoop()
+     */
+    @Nullable
+    protected static SongObject getNextSong(@NotNull PlayMode mode) {
+        if (songList == null) return null;
         SongObject result;
         switch (mode) {
             case RANDOM:
@@ -54,6 +72,12 @@ public class PlayListManager {
         return result;
     }
 
+    /**
+     * will be called if the user press the "previous song" button.
+     * this method will get a history in {@link PlayStack}
+     *
+     * @return song
+     */
     private static SongObject nextSongInDefault() {
         int index = songList.getSongObjects().indexOf(currentSong);
         SongObject result;
@@ -66,12 +90,14 @@ public class PlayListManager {
         return result;
     }
 
+    @Nullable
     private static SongObject nextSongInRandom() {
         Random random = new Random();
         int r_index = random.nextInt(songList.getSize() - 1);
         return songList.getSongObjects().get(r_index);
     }
 
+    @Deprecated
     private static SongObject nextSongInSmart() {
         // TODO
         return currentSong;
@@ -79,5 +105,9 @@ public class PlayListManager {
 
     private static SongObject nextSongInLoop() {
         return currentSong;
+    }
+
+    public static void clearFutureStack() {
+        history.clearFutureStack();
     }
 }
