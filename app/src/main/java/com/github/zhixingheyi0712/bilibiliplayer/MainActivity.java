@@ -11,6 +11,7 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
+import android.app.AlarmManager;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -93,6 +94,7 @@ public class MainActivity extends AppCompatActivity {
         replaceFragment(new PlayerFragment());
         initDrawerMenu();
         initMediaPlayer();
+
     }
 
     @Override

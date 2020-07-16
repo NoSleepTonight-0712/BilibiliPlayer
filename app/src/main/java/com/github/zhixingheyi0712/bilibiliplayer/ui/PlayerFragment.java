@@ -33,12 +33,10 @@ public class PlayerFragment extends Fragment {
     private Handler handler = new Handler();
     private Runnable runnable = new Runnable() {
         public void run() {
-            this.update();
-            handler.postDelayed(this, 1000);// 间隔120秒
-        }
-        void update() {
             if (old_currentSong == PlayListManager.getCurrentSong()) return;
+            old_currentSong = PlayListManager.getCurrentSong();
             updateTitleBox();
+            handler.postDelayed(this, 1000);// 间隔120秒
         }
     };
 
@@ -114,6 +112,4 @@ public class PlayerFragment extends Fragment {
             requireActivity().getApplicationContext().startForegroundService(playPauseSwitch);
         }
     }
-
-
 }
