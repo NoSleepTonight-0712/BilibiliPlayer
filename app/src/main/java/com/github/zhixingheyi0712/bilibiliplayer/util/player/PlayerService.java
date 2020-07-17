@@ -6,7 +6,9 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.graphics.BitmapFactory;
+import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.IBinder;
 import android.util.Log;
@@ -72,6 +74,11 @@ public class PlayerService extends Service {
 
         player = new MediaPlayer();
         player.setOnCompletionListener(mp -> playMusic(PlayListManager.nextPlay(false)));
+
+        if (!EarphoneDisconnectListener.enabled){
+            IntentFilter filter = new IntentFilter(AudioManager.ACTION_AUDIO_BECOMING_NOISY);
+            registerReceiver(new EarphoneDisconnectListener(), filter);
+        }
     }
 
     /**
@@ -105,7 +112,8 @@ public class PlayerService extends Service {
             if (player.isPlaying()) {
                 player.pause();
             }
-//            EventBus.getDefault().postSticky(new PlayerEvents.SetPlayingButtonState(false));
+            EventBus.getDefault().postSticky(new PlayerEvents.SetPlayingButtonState(player.isPlaying()));
+            return;
         }
 
         // 没有加载音频就退出
@@ -167,7 +175,7 @@ public class PlayerService extends Service {
             } catch (IOException e) {
                 Toast.makeText(ApplicationMain.getContext(),
                         R.string.t_filebroken, Toast.LENGTH_SHORT).show();
-                f.delete();
+                boolean _ignore = f.delete();
                 e.printStackTrace();
             }
         } else {
@@ -178,6 +186,7 @@ public class PlayerService extends Service {
     /**
      * update play/pause button
      * always be sent by ui.
+     *
      * @param event {@link PlayerEvents.ResendUpdatePlayPauseButton}
      */
     @Subscribe(threadMode = ThreadMode.MAIN)
