@@ -49,6 +49,8 @@ public class PlayerFragment extends Fragment {
             EventBus.getDefault().post(new PlayerEvents.PlayNextSong(true));
         });
 
+        EventBus.getDefault().post(new PlayerEvents.ResendUpdatePlayPauseButton());
+
         return mainView;
     }
 
@@ -82,7 +84,7 @@ public class PlayerFragment extends Fragment {
         } else {
             play.setImageResource(R.drawable.ic_pause);
         }
-        EventBus.getDefault().removeStickyEvent(event);
+        EventBus.getDefault().removeStickyEvent(PlayerEvents.SetPlayingButtonState.class);
     }
 
     @Override

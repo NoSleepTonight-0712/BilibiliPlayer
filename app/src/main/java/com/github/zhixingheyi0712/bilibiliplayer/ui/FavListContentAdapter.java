@@ -44,7 +44,7 @@ public class FavListContentAdapter extends RecyclerView.Adapter<FavListContentAd
             Log.i(GlobalVariables.TAG, "Set current song when click in favlist activity: " + song.toString());
             PlayListManager.setCurrentSong(song);
 
-            EventBus.getDefault().postSticky(new PlayerEvents.SetPlayingButtonState(true));
+//            EventBus.getDefault().postSticky(new PlayerEvents.SetPlayingButtonState(true));
             EventBus.getDefault().post(new PlayerEvents.SetPlayerResource(song));
 
             activity.finish();

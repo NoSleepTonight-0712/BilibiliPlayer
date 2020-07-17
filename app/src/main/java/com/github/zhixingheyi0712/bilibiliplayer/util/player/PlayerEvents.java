@@ -98,4 +98,10 @@ public class PlayerEvents {
             return id;
         }
     }
+
+    /**
+     * update play/pause button
+     * always be sent by ui.
+     */
+    public static class ResendUpdatePlayPauseButton {}
 }

@@ -26,10 +26,12 @@ import com.github.zhixingheyi0712.bilibiliplayer.util.info.LocalInfoManager;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.Objects;
+import java.util.concurrent.ThreadPoolExecutor;
 
 public class PlayerService extends Service {
     private final String TAG = GlobalVariables.TAG + ": PlayService";
@@ -75,8 +77,9 @@ public class PlayerService extends Service {
     /**
      * This method only receive the stop playing intent.
      * {@link com.github.zhixingheyi0712.bilibiliplayer.ui.SettingsFragment}
-     * @param intent stop playing intent
-     * @param flags auto
+     *
+     * @param intent  stop playing intent
+     * @param flags   auto
      * @param startId auto
      * @return auto
      */
@@ -92,32 +95,37 @@ public class PlayerService extends Service {
      * {@link EventBus}
      * switch player playing or pause.
      * will resent a sticky post to update play/pause button.
-     * @see com.github.zhixingheyi0712.bilibiliplayer.ui.PlayerFragment
+     *
      * @param event {@link PlayerEvents.SetPlayingServiceState}
+     * @see com.github.zhixingheyi0712.bilibiliplayer.ui.PlayerFragment
      */
     @Subscribe(threadMode = ThreadMode.BACKGROUND)
-    public void switchPlayPauseService(PlayerEvents.SetPlayingServiceState event) {
+    public void switchPlayPauseService(@NotNull PlayerEvents.SetPlayingServiceState event) {
         if (event.isForcePauseEnabled()) {
             if (player.isPlaying()) {
                 player.pause();
             }
-            EventBus.getDefault().postSticky(new PlayerEvents.SetPlayingButtonState(false));
+//            EventBus.getDefault().postSticky(new PlayerEvents.SetPlayingButtonState(false));
         }
+
+        // 没有加载音频就退出
+        int length = player.getDuration();
+        if (length < 0) return;
 
         if (player.isPlaying()) {
             player.pause();
-            EventBus.getDefault().postSticky(new PlayerEvents.SetPlayingButtonState(false));
         } else {
             player.start();
-            EventBus.getDefault().postSticky(new PlayerEvents.SetPlayingButtonState(true));
         }
+        EventBus.getDefault().postSticky(new PlayerEvents.SetPlayingButtonState(player.isPlaying()));
         EventBus.getDefault().removeStickyEvent(event);
     }
 
     /**
      * set player resource. the event contains a song.
-     * @see EventBus
+     *
      * @param event {@link PlayerEvents.SetPlayerResource}
+     * @see EventBus
      */
     @Subscribe(threadMode = ThreadMode.BACKGROUND)
     public void setPlayerResource(PlayerEvents.SetPlayerResource event) {
@@ -127,6 +135,7 @@ public class PlayerService extends Service {
     /**
      * playNextSong.
      * Notice the "next" means the next song to play, it maybe the previous one if event.isPrevious() == true.
+     *
      * @param event {@link PlayerEvents.PlayNextSong}
      */
     @Subscribe(threadMode = ThreadMode.BACKGROUND)
@@ -141,6 +150,7 @@ public class PlayerService extends Service {
     /**
      * play music by SongObject.
      * call this method to play a music.
+     *
      * @param song song
      */
     private void playMusic(@Nullable SongObject song) {
@@ -163,6 +173,16 @@ public class PlayerService extends Service {
         } else {
             Log.e(TAG, "file is not exist.");
         }
+    }
+
+    /**
+     * update play/pause button
+     * always be sent by ui.
+     * @param event {@link PlayerEvents.ResendUpdatePlayPauseButton}
+     */
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void resendUpdatePlayPauseButton(PlayerEvents.ResendUpdatePlayPauseButton event) {
+        EventBus.getDefault().postSticky(new PlayerEvents.SetPlayingButtonState(player.isPlaying()));
     }
 
     @Override
