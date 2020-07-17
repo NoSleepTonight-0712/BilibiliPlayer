@@ -79,6 +79,7 @@ public class SettingsFragment extends Fragment {
                 intent.putExtra(GlobalVariables.STOP_PLAYING, true);
                 PendingIntent pendingIntent = PendingIntent.getService(getContext(), 0, intent, 0);
                 alarm.set(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime() + time, pendingIntent);
+                Toast.makeText(getContext(), R.string.t_set_alarm_success, Toast.LENGTH_SHORT).show();
             } catch (NullPointerException ignore) {
             }
         });

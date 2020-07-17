@@ -52,5 +52,6 @@
     <string name="stop_playing">停止播放:</string>
     <string name="stop_playing_2">分钟后</string>
     <string name="confirm">确认</string>
+    <string name="t_set_alarm_success">设置成功</string>
 
 </resources>
