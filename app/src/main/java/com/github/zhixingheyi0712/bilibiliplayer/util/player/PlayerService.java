@@ -93,9 +93,14 @@ public class PlayerService extends Service {
                 (getApplicationContext(), Util.getUserAgent(getApplicationContext(), "bilibili player"));
         exoPlayer.prepare(PlayListManager.getPlaylist());
         exoPlayer.addListener(new Player.EventListener() {
+            /**
+             * 手动点下一个：1
+             * 自动：0
+             * @param reason
+             */
             @Override
             public void onPositionDiscontinuity(int reason) {
-                if (reason == Player.DISCONTINUITY_REASON_SEEK_ADJUSTMENT) {
+                if (reason == 0 || reason == 1) {
                     PlayListManager.updatePlayList();
                 }
             }
