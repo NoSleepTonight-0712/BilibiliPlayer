@@ -10,6 +10,7 @@ import com.github.zhixingheyi0712.bilibiliplayer.util.SongObject;
 import com.github.zhixingheyi0712.bilibiliplayer.util.UpdateMode;
 import com.github.zhixingheyi0712.bilibiliplayer.util.UserSettings;
 import com.github.zhixingheyi0712.bilibiliplayer.util.info.LocalInfoManager;
+import com.google.android.exoplayer2.Player;
 import com.google.android.exoplayer2.source.ConcatenatingMediaSource;
 import com.google.android.exoplayer2.source.MediaSource;
 import com.google.android.exoplayer2.source.ProgressiveMediaSource;
@@ -30,7 +31,7 @@ import static com.github.zhixingheyi0712.bilibiliplayer.util.GlobalVariables.TAG
  * it can be modified and update.
  * {@link #songList} is used to generate and update the playlist.
  * usually stable if user do not refresh the {@link com.github.zhixingheyi0712.bilibiliplayer.FavListContentActivity}
- *
+ * <p>
  * I use {@link SongList#getNextSong(PlayMode, int)} to generate which to play next,
  * and use {@link #updatePlayList()} to put it to player in {@link PlayerService}
  *
@@ -61,8 +62,21 @@ public class PlayListManager {
         } else {
             currentIndex = tag.getIndexInSongList();
         }
-        SongObject nextSong = songList.getNextSong(mode, currentIndex);
-        playlist.addMediaSource(getMediaSourceFromSongObject(nextSong));
+
+        if (mode == PlayMode.LOOP) {
+            PlayerService.getExoPlayer().setRepeatMode(Player.REPEAT_MODE_ONE);
+        } else if (mode == PlayMode.DEFAULT) {
+            PlayerService.getExoPlayer().setRepeatMode(Player.REPEAT_MODE_ALL);
+        } else {
+            PlayerService.getExoPlayer().setRepeatMode(Player.REPEAT_MODE_OFF);
+        }
+
+        if (playlist.getSize() < songList.getSize()) {
+            // songlist中还有歌没有加入playlist
+            SongObject nextSong = songList.getNextSong(mode, currentIndex);
+            playlist.addMediaSource(getMediaSourceFromSongObject(nextSong));
+        }
+
         MediaTag currentTag = (MediaTag) PlayerService.getExoPlayer().getCurrentTag();
 
         // 手动或自动下一首
@@ -74,7 +88,8 @@ public class PlayListManager {
      * this method was only called in {@link com.github.zhixingheyi0712.bilibiliplayer.ui.FavListContentAdapter}
      * when a song is clicked.
      * After that, {@link #updatePlayList()} will be called.
-      * @param song clicked song in {@link com.github.zhixingheyi0712.bilibiliplayer.ui.ExoPlayerFragment}
+     *
+     * @param song clicked song in {@link com.github.zhixingheyi0712.bilibiliplayer.ui.ExoPlayerFragment}
      */
     public static void addToPlayList(SongObject song) {
         MediaSource source = getMediaSourceFromSongObject(song);
@@ -84,9 +99,10 @@ public class PlayListManager {
     /**
      * Convert SongObject to MediaSource.
      * ONLY MediaSource can be added to {@link #playlist}
-     * @see ConcatenatingMediaSource
+     *
      * @param song {@link SongObject}
      * @return {@link MediaSource}
+     * @see ConcatenatingMediaSource
      */
     @Nullable
     public static MediaSource getMediaSourceFromSongObject(SongObject song) {
@@ -136,9 +152,8 @@ public class PlayListManager {
      * @see #nextSongInRandom()
      * @see #nextSongInSmart()
      * @see #nextSongInLoop()
-     *
-     * @deprecated {@link SongList} instead.
      * @see #updatePlayList()
+     * @deprecated {@link SongList} instead.
      */
     @Deprecated
     @Nullable

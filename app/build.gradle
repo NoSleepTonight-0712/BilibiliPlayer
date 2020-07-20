@@ -7,8 +7,8 @@ android {
         applicationId "com.github.zhixinghey0712.bilibiliplayer"
         minSdkVersion 28
         targetSdkVersion 29
-        versionCode 5
-        versionName "alpha-0.3.0"
+        versionCode 6
+        versionName "alpha-0.3.1"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
