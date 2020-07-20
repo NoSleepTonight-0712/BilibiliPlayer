@@ -21,6 +21,11 @@ import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 import org.jetbrains.annotations.NotNull;
 
+/**
+ * @deprecated use {@link ExoPlayerFragment} instead. Exoplayer is much better.
+ * @see com.google.android.exoplayer2.ExoPlayer
+ */
+@Deprecated
 public class PlayerFragment extends Fragment {
     private ImageButton play;
     private ImageButton next;

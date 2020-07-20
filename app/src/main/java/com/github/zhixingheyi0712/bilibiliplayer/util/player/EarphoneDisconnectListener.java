@@ -16,9 +16,7 @@ public class EarphoneDisconnectListener extends BroadcastReceiver {
         enabled = true;
         String action = intent.getAction();
         if (AudioManager.ACTION_AUDIO_BECOMING_NOISY.equals(action)) {
-            PlayerEvents.SetPlayingServiceState event = new PlayerEvents.SetPlayingServiceState();
-            event.enableForcePause();
-            EventBus.getDefault().post(event);
+            PlayerService.getExoPlayer().setPlayWhenReady(false);
         }
     }
 }

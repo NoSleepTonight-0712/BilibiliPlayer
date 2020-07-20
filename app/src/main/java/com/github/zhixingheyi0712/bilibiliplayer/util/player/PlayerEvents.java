@@ -10,6 +10,7 @@ public class PlayerEvents {
      * {@link com.github.zhixingheyi0712.bilibiliplayer.ui.PlayerFragment}
      * notice it cannot actually change the player state.
      */
+    @Deprecated
     public static class SetPlayingButtonState {
         public boolean isPlaying() {
             return playing;
@@ -26,6 +27,7 @@ public class PlayerEvents {
      * switch play/pause to player.
      * notice it cannot change the button.
      */
+    @Deprecated
     public static class SetPlayingServiceState {
         private boolean force_pause = false;
 
@@ -41,6 +43,7 @@ public class PlayerEvents {
     /**
      * set player resource.
      */
+    @Deprecated
     public static class SetPlayerResource {
         public SongObject getSong() {
             return song;
@@ -103,5 +106,6 @@ public class PlayerEvents {
      * update play/pause button
      * always be sent by ui.
      */
+    @Deprecated
     public static class ResendUpdatePlayPauseButton {}
 }

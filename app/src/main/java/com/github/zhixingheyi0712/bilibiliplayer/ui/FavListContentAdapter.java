@@ -13,6 +13,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.github.zhixingheyi0712.bilibiliplayer.R;
 import com.github.zhixingheyi0712.bilibiliplayer.util.GlobalVariables;
+import com.github.zhixingheyi0712.bilibiliplayer.util.SongList;
 import com.github.zhixingheyi0712.bilibiliplayer.util.SongObject;
 import com.github.zhixingheyi0712.bilibiliplayer.util.player.PlayListManager;
 import com.github.zhixingheyi0712.bilibiliplayer.util.player.PlayerEvents;
@@ -21,6 +22,7 @@ import com.github.zhixingheyi0712.bilibiliplayer.util.player.PlayerService;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class FavListContentAdapter extends RecyclerView.Adapter<FavListContentAdapter.ViewHolder> {
@@ -42,11 +44,11 @@ public class FavListContentAdapter extends RecyclerView.Adapter<FavListContentAd
             int position = holder.getLayoutPosition();
             SongObject song = songObjects.get(position);
             Log.i(GlobalVariables.TAG, "Set current song when click in favlist activity: " + song.toString());
-            PlayListManager.setCurrentSong(song);
+            PlayListManager.clearPlayList();
+            PlayListManager.addToPlayList(song);
 
-//            EventBus.getDefault().postSticky(new PlayerEvents.SetPlayingButtonState(true));
-            EventBus.getDefault().post(new PlayerEvents.SetPlayerResource(song));
-
+            // 在歌单选择
+            EventBus.getDefault().postSticky(new PlayerEvents.SetPlayingInfo(song));
             activity.finish();
         });
 

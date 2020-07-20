@@ -7,8 +7,8 @@ android {
         applicationId "com.github.zhixinghey0712.bilibiliplayer"
         minSdkVersion 28
         targetSdkVersion 29
-        versionCode 4
-        versionName "alpha-0.2.1"
+        versionCode 5
+        versionName "alpha-0.3.0"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -28,6 +28,7 @@ android {
 
 allprojects {
     repositories {
+        google()
         jcenter()
         mavenCentral()
     }
@@ -52,4 +53,5 @@ dependencies {
     implementation "com.squareup.okhttp3:okhttp:4.7.2"
     implementation 'com.alibaba:fastjson:1.1.71.android'
     implementation 'org.greenrobot:eventbus:3.2.0'
+    implementation 'com.google.android.exoplayer:exoplayer:2.11.7'
 }

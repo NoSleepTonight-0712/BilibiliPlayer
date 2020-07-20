@@ -2,6 +2,11 @@
 写的很乱……  
 有机会重构吧  
 
+#### alpha-0.3.0
+* 使用[Exoplayer](https://github.com/google/ExoPlayer)重构部分代码
+* 新增：可拖动进度条，15秒快进，5秒快退（`Exoplayer`香啊）
+* 已知问题：单曲循环不可用
+
 #### alpha-0.2.1
 * 修复播放按钮和播放状态不同步的bug
 * 新增断开耳机自动暂停

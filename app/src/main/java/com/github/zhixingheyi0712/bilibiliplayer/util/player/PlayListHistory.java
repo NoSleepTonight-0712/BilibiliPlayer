@@ -9,6 +9,11 @@ import com.github.zhixingheyi0712.bilibiliplayer.util.UserSettings;
 
 import org.greenrobot.eventbus.EventBus;
 
+/**
+ * @deprecated use {@link com.google.android.exoplayer2.source.ConcatenatingMediaSource} instead. it will
+ * be managed by exoplayer.
+ */
+@Deprecated
 public class PlayListHistory {
     private int LIMIT = 20;
     private PlayStack previous = new PlayStack(LIMIT);

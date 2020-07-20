@@ -10,6 +10,7 @@ import android.content.IntentFilter;
 import android.graphics.BitmapFactory;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
+import android.net.Uri;
 import android.os.IBinder;
 import android.util.Log;
 import android.widget.Toast;
@@ -24,6 +25,15 @@ import com.github.zhixingheyi0712.bilibiliplayer.util.GlobalVariables;
 import com.github.zhixingheyi0712.bilibiliplayer.util.SongObject;
 import com.github.zhixingheyi0712.bilibiliplayer.util.UpdateMode;
 import com.github.zhixingheyi0712.bilibiliplayer.util.info.LocalInfoManager;
+import com.google.android.exoplayer2.Player;
+import com.google.android.exoplayer2.SimpleExoPlayer;
+import com.google.android.exoplayer2.source.ConcatenatingMediaSource;
+import com.google.android.exoplayer2.source.MediaSource;
+import com.google.android.exoplayer2.source.ProgressiveMediaSource;
+import com.google.android.exoplayer2.ui.PlayerControlView;
+import com.google.android.exoplayer2.upstream.DataSource;
+import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
+import com.google.android.exoplayer2.util.Util;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -32,12 +42,18 @@ import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.EventListener;
 import java.util.Objects;
+import java.util.Random;
 import java.util.concurrent.ThreadPoolExecutor;
 
+// start in MainActivity
 public class PlayerService extends Service {
     private final String TAG = GlobalVariables.TAG + ": PlayService";
+    @Deprecated
     private MediaPlayer player;
+    private static SimpleExoPlayer exoPlayer;
+    private static DataSource.Factory dataSourceFactory;
 
     @Override
     @Subscribe
@@ -71,11 +87,22 @@ public class PlayerService extends Service {
                 .build();
         Notification notification1 = notification.build();
         startForeground(1, notification1);
+        if (exoPlayer == null)
+            exoPlayer = new SimpleExoPlayer.Builder(getApplicationContext()).build();
+        if (dataSourceFactory == null) dataSourceFactory = new DefaultDataSourceFactory
+                (getApplicationContext(), Util.getUserAgent(getApplicationContext(), "bilibili player"));
+        exoPlayer.prepare(PlayListManager.getPlaylist());
+        exoPlayer.addListener(new Player.EventListener() {
+            @Override
+            public void onPositionDiscontinuity(int reason) {
+                if (reason == Player.DISCONTINUITY_REASON_SEEK_ADJUSTMENT) {
+                    PlayListManager.updatePlayList();
+                }
+            }
+        });
 
-        player = new MediaPlayer();
-        player.setOnCompletionListener(mp -> playMusic(PlayListManager.nextPlay(false)));
-
-        if (!EarphoneDisconnectListener.enabled){
+        // 动态注册耳机掉线监听器
+        if (!EarphoneDisconnectListener.enabled) {
             IntentFilter filter = new IntentFilter(AudioManager.ACTION_AUDIO_BECOMING_NOISY);
             registerReceiver(new EarphoneDisconnectListener(), filter);
         }
@@ -93,7 +120,7 @@ public class PlayerService extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         if (intent.getBooleanExtra(GlobalVariables.STOP_PLAYING, false)) {
-            EventBus.getDefault().post(new PlayerEvents.SetPlayingServiceState());
+            exoPlayer.setPlayWhenReady(false);
         }
         return super.onStartCommand(intent, flags, startId);
     }
@@ -106,26 +133,25 @@ public class PlayerService extends Service {
      * @param event {@link PlayerEvents.SetPlayingServiceState}
      * @see com.github.zhixingheyi0712.bilibiliplayer.ui.PlayerFragment
      */
+    @Deprecated
     @Subscribe(threadMode = ThreadMode.BACKGROUND)
     public void switchPlayPauseService(@NotNull PlayerEvents.SetPlayingServiceState event) {
         if (event.isForcePauseEnabled()) {
-            if (player.isPlaying()) {
-                player.pause();
+            if (exoPlayer.isPlaying()) {
+                exoPlayer.setPlayWhenReady(false);
             }
-            EventBus.getDefault().postSticky(new PlayerEvents.SetPlayingButtonState(player.isPlaying()));
             return;
         }
 
         // 没有加载音频就退出
-        int length = player.getDuration();
+        long length = exoPlayer.getDuration();
         if (length < 0) return;
 
-        if (player.isPlaying()) {
-            player.pause();
+        if (exoPlayer.isPlaying()) {
+            exoPlayer.setPlayWhenReady(false);
         } else {
-            player.start();
+            exoPlayer.setPlayWhenReady(true);
         }
-        EventBus.getDefault().postSticky(new PlayerEvents.SetPlayingButtonState(player.isPlaying()));
         EventBus.getDefault().removeStickyEvent(event);
     }
 
@@ -135,6 +161,7 @@ public class PlayerService extends Service {
      * @param event {@link PlayerEvents.SetPlayerResource}
      * @see EventBus
      */
+    @Deprecated
     @Subscribe(threadMode = ThreadMode.BACKGROUND)
     public void setPlayerResource(PlayerEvents.SetPlayerResource event) {
         playMusic(event.getSong());
@@ -146,6 +173,7 @@ public class PlayerService extends Service {
      *
      * @param event {@link PlayerEvents.PlayNextSong}
      */
+    @Deprecated
     @Subscribe(threadMode = ThreadMode.BACKGROUND)
     public void playNextSong(PlayerEvents.PlayNextSong event) {
         if (event.isPrevious()) {
@@ -161,26 +189,11 @@ public class PlayerService extends Service {
      *
      * @param song song
      */
+    @Deprecated
     private void playMusic(@Nullable SongObject song) {
-        if (song == null) return;
-        File f = LocalInfoManager.getMediaFile(song, UpdateMode.FORCE_LOCAL);
-        if (f != null) {
-            try {
-                player.reset();
-                player.setDataSource(f.getPath());
-                player.prepareAsync();
-                EventBus.getDefault().postSticky(new PlayerEvents.SetPlayingInfo(song));
-                PlayListManager.setCurrentSong(song);
-                player.setOnPreparedListener(MediaPlayer::start);
-            } catch (IOException e) {
-                Toast.makeText(ApplicationMain.getContext(),
-                        R.string.t_filebroken, Toast.LENGTH_SHORT).show();
-                boolean _ignore = f.delete();
-                e.printStackTrace();
-            }
-        } else {
-            Log.e(TAG, "file is not exist.");
-        }
+        MediaSource mediaSource = PlayListManager.getMediaSourceFromSongObject(song);
+        if (mediaSource == null) return;
+        exoPlayer.prepare(mediaSource);
     }
 
     /**
@@ -189,6 +202,7 @@ public class PlayerService extends Service {
      *
      * @param event {@link PlayerEvents.ResendUpdatePlayPauseButton}
      */
+    @Deprecated
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void resendUpdatePlayPauseButton(PlayerEvents.ResendUpdatePlayPauseButton event) {
         EventBus.getDefault().postSticky(new PlayerEvents.SetPlayingButtonState(player.isPlaying()));
@@ -204,5 +218,17 @@ public class PlayerService extends Service {
         super.onDestroy();
         EventBus.getDefault().unregister(this);
         player = null;
+    }
+
+    public static void setExoPlayer(SimpleExoPlayer exoPlayer) {
+        PlayerService.exoPlayer = exoPlayer;
+    }
+
+    public static SimpleExoPlayer getExoPlayer() {
+        return exoPlayer;
+    }
+
+    public static DataSource.Factory getDataSourceFactory() {
+        return dataSourceFactory;
     }
 }

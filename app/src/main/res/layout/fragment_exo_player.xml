@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context=".ui.ExoPlayerFragment">
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="64sp"
+        android:layout_marginTop="32dp"
+        android:layout_marginHorizontal="32dp"
+        android:id="@+id/exoplayer_music_name"
+        android:ellipsize="marquee"
+        android:singleLine="true"
+        android:marqueeRepeatLimit="marquee_forever"
+        android:focusable="true"
+        android:focusableInTouchMode="true"/>
+    <com.google.android.exoplayer2.ui.PlayerControlView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:layout_marginHorizontal="16dp"
+        android:layout_marginBottom="32dp"
+        app:scrubber_color="@color/grey"
+        app:played_color="@color/light_grey"
+        app:unplayed_color="@color/lightest_grey"
+        app:buffered_color="@color/lightest_grey"
+        app:show_timeout="-1"
+        app:controller_layout_id="@layout/bilibiliplayer_controler_view"
+        android:id="@+id/bilibili_exo_player_controler"/>
+
+</FrameLayout>

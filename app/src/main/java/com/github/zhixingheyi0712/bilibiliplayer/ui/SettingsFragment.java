@@ -64,7 +64,8 @@ public class SettingsFragment extends Fragment {
                     UserSettings.setPlayMode(PlayMode.DEFAULT);
                     break;
             }
-            PlayListManager.clearFutureStack();
+            PlayListManager.clearFuturePlayList();
+            PlayListManager.updatePlayList();
             Toast.makeText(getActivity(), "当前播放模式：" + key, Toast.LENGTH_SHORT).show();
         });
 

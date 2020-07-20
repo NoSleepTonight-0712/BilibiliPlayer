@@ -21,17 +21,28 @@ public class SongObject implements Serializable {
     private Bitmap Cover;
     private String CoverImageLink;
 
+    public int getIndexInList() {
+        return indexInList;
+    }
+
+    public void setIndexInList(int indexInList) {
+        this.indexInList = indexInList;
+    }
+
+    private int indexInList = -1;
+
     public int getP() {
         return p;
     }
 
     private int p = 0;  // 暂时先不写分p
 
-    public SongObject(Medias medias) {
+    public SongObject(Medias medias, int indexInList) {
         this.name = medias.getTitle();
         this.singer = medias.getUpper().getName();
         this.bvid = medias.getBvid();
         this.CoverImageLink = medias.getCover();
+        this.indexInList = indexInList;
     }
 
     public String getName() {

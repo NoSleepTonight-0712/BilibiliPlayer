@@ -18,7 +18,6 @@ import android.view.MenuItem;
 import android.widget.Toast;
 
 import com.github.zhixingheyi0712.bilibiliplayer.ui.FavListContentAdapter;
-import com.github.zhixingheyi0712.bilibiliplayer.util.FavListObject;
 import com.github.zhixingheyi0712.bilibiliplayer.util.GlobalVariables;
 import com.github.zhixingheyi0712.bilibiliplayer.util.SongList;
 import com.github.zhixingheyi0712.bilibiliplayer.util.SongObject;
@@ -27,8 +26,8 @@ import com.github.zhixingheyi0712.bilibiliplayer.util.info.LocalInfoManager;
 import com.github.zhixingheyi0712.bilibiliplayer.util.json.favlistContent.FavlistContentJsonBean;
 import com.github.zhixingheyi0712.bilibiliplayer.util.json.favlistContent.Medias;
 import com.github.zhixingheyi0712.bilibiliplayer.util.player.PlayListManager;
+import com.github.zhixingheyi0712.bilibiliplayer.util.player.PlayerService;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -99,6 +98,9 @@ public class FavListContentActivity extends AppCompatActivity {
     protected void onPause() {
         super.onPause();
         PlayListManager.setSongList(songObjectList.clone());
+        PlayerService.getExoPlayer().prepare(PlayListManager.getPlaylist());
+        PlayListManager.updatePlayList();
+        PlayerService.getExoPlayer().setPlayWhenReady(true);
     }
 
     /**
@@ -207,8 +209,9 @@ public class FavListContentActivity extends AppCompatActivity {
             songlist.setName(json.getData().getInfo().getTitle());
             songlist.setFid(String.valueOf(json.getData().getInfo().getId()));
             songlist.getSongObjects().clear();
-            for (Medias m : json.getData().getMedias()) {
-                songlist.getSongObjects().add(new SongObject(m));
+            List<Medias> medias = json.getData().getMedias();
+            for (int i = 0; i < medias.size(); i++) {
+                songlist.getSongObjects().add(new SongObject(medias.get(i), i));
             }
             updateFavlistContentUI();
         }

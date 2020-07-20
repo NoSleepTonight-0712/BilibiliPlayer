@@ -6,6 +6,10 @@ import com.github.zhixingheyi0712.bilibiliplayer.util.SongObject;
 
 import java.util.ArrayDeque;
 
+/**
+ * @deprecated because of the deprecated of {@link PlayListHistory}
+ */
+@Deprecated
 public class PlayStack extends ArrayDeque<SongObject> {
     private int limit;
 

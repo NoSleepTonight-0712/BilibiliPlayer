@@ -24,7 +24,7 @@ import android.widget.Toast;
 
 import static com.github.zhixingheyi0712.bilibiliplayer.util.GlobalVariables.TAG;
 
-import com.github.zhixingheyi0712.bilibiliplayer.ui.PlayerFragment;
+import com.github.zhixingheyi0712.bilibiliplayer.ui.ExoPlayerFragment;
 import com.github.zhixingheyi0712.bilibiliplayer.ui.PlaylistFragment;
 import com.github.zhixingheyi0712.bilibiliplayer.ui.SettingsFragment;
 import com.github.zhixingheyi0712.bilibiliplayer.ui.UserFragment;
@@ -67,7 +67,7 @@ public class MainActivity extends AppCompatActivity {
             actionBar.setHomeAsUpIndicator(R.drawable.ic_menu);
         }
 
-        replaceFragment(new PlayerFragment());
+        replaceFragment(new ExoPlayerFragment());
         initDrawerMenu();
         initMediaPlayer();
     }
@@ -95,13 +95,9 @@ public class MainActivity extends AppCompatActivity {
     private void initDrawerMenu() {
         Log.i(TAG, "Start init Drawer Menu");
         NavigationView navView = findViewById(R.id.navigation_view);
-        navView.setCheckedItem(R.id.menu_player);
+        navView.setCheckedItem(R.id.menu_exo_player);
         navView.setNavigationItemSelectedListener((MenuItem item) -> {
             switch (item.getItemId()) {
-                case R.id.menu_player:
-                    actionBar.setTitle(R.string.player);
-                    replaceFragment(new PlayerFragment());
-                    break;
                 case R.id.menu_user:
                     actionBar.setTitle(R.string.user);
                     replaceFragment(new UserFragment());
@@ -114,6 +110,9 @@ public class MainActivity extends AppCompatActivity {
                     actionBar.setTitle(R.string.settings);
                     replaceFragment(new SettingsFragment());
                     break;
+                case R.id.menu_exo_player:
+                    actionBar.setTitle(R.string.exoplayer);
+                    replaceFragment(new ExoPlayerFragment());
                 default:
             }
             mDrawerLayout.close();
