@@ -12,6 +12,7 @@ import android.os.SystemClock;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
@@ -81,6 +82,10 @@ public class SettingsFragment extends Fragment {
                 PendingIntent pendingIntent = PendingIntent.getService(getContext(), 0, intent, 0);
                 alarm.set(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime() + time, pendingIntent);
                 Toast.makeText(getContext(), R.string.t_set_alarm_success, Toast.LENGTH_SHORT).show();
+                InputMethodManager manager = (InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+                if (manager != null) {
+                    manager.hideSoftInputFromWindow(view.getWindowToken(), 0);
+                }
             } catch (NullPointerException ignore) {
             }
         });

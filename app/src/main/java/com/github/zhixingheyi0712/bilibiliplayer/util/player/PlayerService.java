@@ -11,8 +11,11 @@ import android.graphics.BitmapFactory;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
+import android.os.Bundle;
 import android.os.IBinder;
 import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.ViewGroup;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
@@ -115,7 +118,7 @@ public class PlayerService extends Service {
 
     /**
      * This method only receive the stop playing intent.
-     * {@link com.github.zhixingheyi0712.bilibiliplayer.ui.SettingsFragment}
+     * {@link com.github.zhixingheyi0712.bilibiliplayer.ui.SettingsFragment#onCreateView(LayoutInflater, ViewGroup, Bundle)}
      *
      * @param intent  stop playing intent
      * @param flags   auto
