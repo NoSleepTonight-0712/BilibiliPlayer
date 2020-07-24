@@ -3,7 +3,10 @@ package com.github.zhixingheyi0712.bilibiliplayer.util.player;
 import android.net.Uri;
 import android.provider.MediaStore;
 import android.util.Log;
+import android.widget.Toast;
 
+import com.github.zhixingheyi0712.bilibiliplayer.ApplicationMain;
+import com.github.zhixingheyi0712.bilibiliplayer.R;
 import com.github.zhixingheyi0712.bilibiliplayer.util.PlayMode;
 import com.github.zhixingheyi0712.bilibiliplayer.util.SongList;
 import com.github.zhixingheyi0712.bilibiliplayer.util.SongObject;
@@ -92,6 +95,10 @@ public class PlayListManager {
      */
     public static void addToPlayList(SongObject song) {
         MediaSource source = getMediaSourceFromSongObject(song);
+        if (source == null) {
+            Toast.makeText(ApplicationMain.getContext(), R.string.t_please_login, Toast.LENGTH_SHORT).show();
+            return;
+        }
         playlist.addMediaSource(source);
     }
 

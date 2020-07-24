@@ -97,10 +97,12 @@ public class FavListContentActivity extends AppCompatActivity {
     @Override
     protected void onPause() {
         super.onPause();
-        PlayListManager.setSongList(songObjectList.clone());
-        PlayerService.getExoPlayer().prepare(PlayListManager.getPlaylist());
-        PlayListManager.updatePlayList();
-        PlayerService.getExoPlayer().setPlayWhenReady(true);
+        if (!PlayerService.getExoPlayer().isPlaying()) {
+            PlayListManager.setSongList(songObjectList.clone());
+            PlayerService.getExoPlayer().prepare(PlayListManager.getPlaylist());
+            PlayListManager.updatePlayList();
+            PlayerService.getExoPlayer().setPlayWhenReady(true);
+        }
     }
 
     /**
