@@ -63,12 +63,11 @@ public class PlayListManager {
             currentIndex = tag.getIndexInSongList();
         }
 
-        if (mode == PlayMode.LOOP) {
+        // 单曲到最后一首也要是REPEAT_MODE_ALL
+        if (mode == PlayMode.LOOP && PlayerService.getExoPlayer().getCurrentWindowIndex() != playlist.getSize() - 1) {
             PlayerService.getExoPlayer().setRepeatMode(Player.REPEAT_MODE_ONE);
-        } else if (mode == PlayMode.DEFAULT) {
-            PlayerService.getExoPlayer().setRepeatMode(Player.REPEAT_MODE_ALL);
         } else {
-            PlayerService.getExoPlayer().setRepeatMode(Player.REPEAT_MODE_OFF);
+            PlayerService.getExoPlayer().setRepeatMode(Player.REPEAT_MODE_ALL);
         }
 
         if (playlist.getSize() < songList.getSize()) {
@@ -221,7 +220,9 @@ public class PlayListManager {
 
     public static void clearFuturePlayList() {
         int size = playlist.getSize();
-        if (size != 1) playlist.removeMediaSourceRange(1, playlist.getSize() - 1);
+        int currentIndex = PlayerService.getExoPlayer().getCurrentWindowIndex();
+        if (currentIndex == size - 1) return; // 已经是最后，不需要移除
+        if (size != 1) playlist.removeMediaSourceRange(currentIndex + 1, playlist.getSize() - 1);
     }
 
     @Deprecated
