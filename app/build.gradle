@@ -24,6 +24,12 @@ android {
         targetCompatibility JavaVersion.VERSION_1_8
     }
     buildToolsVersion '29.0.2'
+
+    android.applicationVariants.all { variant ->
+        variant.outputs.all {
+            outputFileName = new File("bilibiliplayer-" + defaultConfig.versionName + ".apk" );
+        }
+    }
 }
 
 allprojects {
