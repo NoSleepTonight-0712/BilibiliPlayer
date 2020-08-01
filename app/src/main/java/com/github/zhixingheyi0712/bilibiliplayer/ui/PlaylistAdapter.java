@@ -50,7 +50,6 @@ public class PlaylistAdapter extends RecyclerView.Adapter<PlaylistAdapter.ViewHo
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             intent.putExtra("fid", favList.getFid());
             intent.putExtra("name", favList.getListName());
-            intent.putExtra("total", favList.getTotal());
             playListActivity.startActivityForResult(intent, GlobalVariables.RETURN_SONG_LIST_INTENT_CODE);
         });
 

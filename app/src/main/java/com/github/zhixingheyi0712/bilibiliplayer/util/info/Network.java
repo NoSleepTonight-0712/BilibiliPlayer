@@ -9,14 +9,19 @@ import com.github.zhixingheyi0712.bilibiliplayer.ApplicationMain;
 import com.github.zhixingheyi0712.bilibiliplayer.R;
 import com.github.zhixingheyi0712.bilibiliplayer.util.BilibiliAPI;
 import com.github.zhixingheyi0712.bilibiliplayer.util.GlobalVariables;
+import com.github.zhixingheyi0712.bilibiliplayer.util.UpdateMode;
+import com.github.zhixingheyi0712.bilibiliplayer.util.UserSettings;
 import com.github.zhixingheyi0712.bilibiliplayer.util.json.cid.CidJsonBean;
 import com.github.zhixingheyi0712.bilibiliplayer.util.json.downloadLink.DownloadLinksJsonBean;
+import com.github.zhixingheyi0712.bilibiliplayer.util.json.favlist.FavList;
+import com.github.zhixingheyi0712.bilibiliplayer.util.json.favlist.FavListJsonBean;
 import com.github.zhixingheyi0712.bilibiliplayer.util.json.favlistContent.FavlistContentJsonBean;
 import com.github.zhixingheyi0712.bilibiliplayer.util.json.favlistContent.Medias;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 import android.os.Handler;
@@ -126,10 +131,18 @@ public class Network {
      * download favlistcontent json.
      * download page by page.
      * @param fid favlist id
-     * @param total total number.
      * @thread background
      */
-    public static void getFavListContent(String fid, int total) {
+    public static void getFavListContent(String fid) {
+        int total = 0;
+        FavListJsonBean json = LocalInfoManager.getFavList(UserSettings.getUid(), UpdateMode.ONLINE);
+        List<FavList> favLists = json.getData().getList();
+        for (FavList list : favLists) {
+            if (String.valueOf(list.getId()).equals(fid)) {
+                total = list.getMedia_count();
+            }
+        }
+
         Log.i(GlobalVariables.TAG, "start fav content page get.");
         ArrayList<String> apis = BilibiliAPI.getFavListContentAPI(fid, total);
         Request request;
@@ -166,6 +179,11 @@ public class Network {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    @Deprecated
+    public static void getFavListContent(String fid, int total) {
+        getFavListContent(fid);
     }
 
     /**

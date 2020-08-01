@@ -22,7 +22,9 @@ import com.github.zhixingheyi0712.bilibiliplayer.util.GlobalVariables;
 import com.github.zhixingheyi0712.bilibiliplayer.util.SongList;
 import com.github.zhixingheyi0712.bilibiliplayer.util.SongObject;
 import com.github.zhixingheyi0712.bilibiliplayer.util.UpdateMode;
+import com.github.zhixingheyi0712.bilibiliplayer.util.UserSettings;
 import com.github.zhixingheyi0712.bilibiliplayer.util.info.LocalInfoManager;
+import com.github.zhixingheyi0712.bilibiliplayer.util.json.favlist.FavListJsonBean;
 import com.github.zhixingheyi0712.bilibiliplayer.util.json.favlistContent.FavlistContentJsonBean;
 import com.github.zhixingheyi0712.bilibiliplayer.util.json.favlistContent.Medias;
 import com.github.zhixingheyi0712.bilibiliplayer.util.player.PlayListManager;
@@ -37,7 +39,6 @@ public class FavListContentActivity extends AppCompatActivity {
     private SongList songObjectList = new SongList();
     private ActionBar actionBar;
     private String fid;
-    private int total;
     private Handler uiHandler;
     private FavListContentAdapter adapter;
     private SwipeRefreshLayout swipe;
@@ -52,7 +53,6 @@ public class FavListContentActivity extends AppCompatActivity {
         // 从PlayerAdapter发出的intent
         Intent intent = getIntent();
         fid = intent.getStringExtra("fid");
-        total = intent.getIntExtra("total", -1);
 
         // 用于发Toast
         uiHandler = new Handler();
@@ -157,10 +157,10 @@ public class FavListContentActivity extends AppCompatActivity {
      */
     private void updateUI(UpdateMode mode) {
         if (mode == UpdateMode.ONLINE) {
-            new updateFavlistContent(swipe, uiHandler, adapter, songObjectList, fid, total, UpdateMode.ONLINE).start();
+            new updateFavlistContent(swipe, uiHandler, adapter, songObjectList, fid, UpdateMode.ONLINE).start();
         } else if (mode == UpdateMode.LOCAL) {
             if (!LocalInfoManager.isFileExists(GlobalVariables.FavListIndexFileName(fid))) return;
-            new updateFavlistContent(swipe, uiHandler, adapter, songObjectList, fid, total, UpdateMode.LOCAL).start();
+            new updateFavlistContent(swipe, uiHandler, adapter, songObjectList, fid, UpdateMode.LOCAL).start();
         }
     }
 
@@ -174,18 +174,16 @@ public class FavListContentActivity extends AppCompatActivity {
         private FavListContentAdapter adapter;
         private SongList songlist;
         private String fid;
-        private int total;
 
         public updateFavlistContent(SwipeRefreshLayout swipe, Handler ui,
                                     FavListContentAdapter adapter, SongList songlist,
-                                    String fid, int total, UpdateMode mode) {
+                                    String fid, UpdateMode mode) {
             this.swipe = swipe;
             this.ui = ui;
             this.adapter = adapter;
             this.songlist = songlist;
             this.mode = mode;
             this.fid = fid;
-            this.total = total;
         }
 
         /**
@@ -206,7 +204,7 @@ public class FavListContentActivity extends AppCompatActivity {
          */
         @Override
         public void run() {
-            @Nullable FavlistContentJsonBean json = LocalInfoManager.getFavListContent(fid, total, mode);
+            @Nullable FavlistContentJsonBean json = LocalInfoManager.getFavListContent(fid, mode);
             if (json == null) return;
             songlist.setName(json.getData().getInfo().getTitle());
             songlist.setFid(String.valueOf(json.getData().getInfo().getId()));

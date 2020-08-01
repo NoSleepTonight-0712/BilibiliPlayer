@@ -10,6 +10,7 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -36,6 +37,7 @@ import com.github.zhixingheyi0712.bilibiliplayer.util.json.user.UserInfoJsonBean
 import com.github.zhixingheyi0712.bilibiliplayer.util.player.PlayerEvents;
 import com.github.zhixingheyi0712.bilibiliplayer.util.player.PlayerService;
 import com.google.android.material.navigation.NavigationView;
+import com.huawei.hms.audiokit.player.manager.HwAudioConfigManager;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -189,5 +191,8 @@ public class MainActivity extends AppCompatActivity {
     @Subscribe(threadMode = ThreadMode.MAIN, sticky = true)
     public void sendToastHint(@NotNull PlayerEvents.HintToast event) {
         Toast.makeText(this, event.getId(), Toast.LENGTH_SHORT).show();
+    }
+
+    private void init(Context context) {
     }
 }

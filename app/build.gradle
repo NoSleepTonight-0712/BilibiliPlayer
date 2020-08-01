@@ -37,6 +37,7 @@ allprojects {
         google()
         jcenter()
         mavenCentral()
+        maven {url 'https://developer.huawei.com/repo/'}
     }
 }
 
@@ -60,4 +61,5 @@ dependencies {
     implementation 'com.alibaba:fastjson:1.1.71.android'
     implementation 'org.greenrobot:eventbus:3.2.0'
     implementation 'com.google.android.exoplayer:exoplayer:2.11.7'
+    implementation 'com.huawei.hms:audiokit-player:1.0.0.302'
 }

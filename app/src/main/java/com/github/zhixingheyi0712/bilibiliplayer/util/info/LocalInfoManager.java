@@ -135,18 +135,17 @@ public class LocalInfoManager {
      * get favlistcontent
      *
      * @param fid   fid
-     * @param total total number of favlistcontent
      * @param mode  {@link UpdateMode}
      * @return Json bean or null, cause null if json cannot be analysed correctly.
      * @thread background
      */
     @Nullable
-    public static FavlistContentJsonBean getFavListContent(String fid, int total, UpdateMode mode) {
+    public static FavlistContentJsonBean getFavListContent(String fid, UpdateMode mode) {
         String fileName = GlobalVariables.FavListIndexFileName(fid);
         if (mode != UpdateMode.FORCE_LOCAL) {
             if (mode == UpdateMode.ONLINE || !isFileExists(fileName)) {
                 Log.i(GlobalVariables.TAG, "联网获取收藏夹内容");
-                Network.getFavListContent(fid, total);
+                Network.getFavListContent(fid);
             }
         }
         FavlistContentJsonBean json = readJson(fileName, FavlistContentJsonBean.class);
